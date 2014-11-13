@@ -18,6 +18,10 @@ import org.bukkit.event.entity.EntityDeathEvent;
 
 import com.trc202.CombatTag.CombatTag;
 
+import techcable.minecraft.combattag.Utils;
+import techcable.minecraft.combattag.events.PlayerTagEvent;
+
+
 public class NoPvpEntityListener implements Listener {
 
     CombatTag plugin;
@@ -39,7 +43,11 @@ public class NoPvpEntityListener implements Listener {
         }
         if (e.getEntity() instanceof Player) {
             Player tagged = (Player) e.getEntity();
-
+	    PlayerTagEvent event = new PlayerTagEvent(tagged, dmgr);
+	    Utils.fireEvent(event);
+	    if (event.isCancelled()) {
+		return;
+	    }
             if (plugin.getNpcMaster().isNPC(tagged) || disallowedWorld(tagged.getWorld().getName())) {
                 return;
             } //If the damaged player is an npc do nothing
