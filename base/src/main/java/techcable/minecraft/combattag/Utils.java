@@ -2,8 +2,10 @@ package techcable.minecraft.combattag;
 
 import net.citizensnpcs.api.npc.NPC;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
@@ -59,4 +61,8 @@ public class Utils {
 		}
 		target.setArmor(armor);
 	}
+
+    public static void fireEvent(Event event) {
+	Bukkit.getServer().getPluginManager().callEvent(event);
+    }
 }

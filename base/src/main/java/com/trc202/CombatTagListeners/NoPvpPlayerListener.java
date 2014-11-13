@@ -26,6 +26,7 @@ import com.trc202.CombatTagEvents.NpcDespawnReason;
 
 import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
+import techcable.minecraft.combattag.events.PvPLogEvent;
 
 public class NoPvpPlayerListener implements Listener {
 
@@ -69,7 +70,16 @@ public class NoPvpPlayerListener implements Listener {
         }
         if (plugin.isInCombat(playerUUID) && PluginCompatibility.isAuthenticated(quitPlr)) {
             //Player has logged out before the pvp battle is considered over by the plugin
-            alertPlayers(quitPlr);
+            
+	    PvPLogEvent event = new PvPLogEvent(quitPlr);
+	    
+	    Utils.fireEvent(event);
+	    
+	    if (event.isCancelled()) {
+		return;
+	    }
+	    
+	    alertPlayers(quitPlr);
             if (plugin.settings.isInstaKill()) {
                 if (plugin.isDebugEnabled()) {
                     CombatTag.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");
