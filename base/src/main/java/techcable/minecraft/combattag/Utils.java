@@ -41,14 +41,9 @@ public class Utils {
 		target.setFireTicks(source.getFireTicks());
 		target.setHealth((float)source.getHealth());
 	}
-	
-	public static void copyNPC(NPC target, Player source) {
-		Player playerTarget = (Player) target.getEntity();
-		copyPlayer(playerTarget, source);
-	}
-	
+
 	public static final ItemStack EMPTY = new ItemStack(Material.AIR);
-	
+
 	public static void emptyInventory(AdvancedOfflinePlayer target) {
 		ItemStack[] items = target.getItems();
 		for (int i = 0; i < items.length; i++) {
@@ -65,4 +60,9 @@ public class Utils {
     public static void fireEvent(Event event) {
     	Bukkit.getServer().getPluginManager().callEvent(event);
     }
+
+	public static NPCHooks getNPCHooks() {
+		//Dont try and get the real implementation yet
+		return new NPCHooks();
+	}
 }

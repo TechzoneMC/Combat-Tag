@@ -44,7 +44,6 @@ import com.trc202.settings.SettingsHelper;
 import com.trc202.settings.SettingsLoader;
 
 import techcable.minecraft.combattag.Utils;
-import techcable.minecraft.combattag.npc.NPCMaster;
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer.PlayerNotFoundException;
@@ -71,9 +70,7 @@ public class CombatTag extends JavaPlugin {
 
     private int npcNumber;
     
-    @Getter
-    private NPCMaster npcMaster;
-    
+       
     public CombatTag() {
         settings = new Settings();
         new File(mainDirectory).mkdirs();
@@ -104,13 +101,7 @@ public class CombatTag extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        for (NPC npc : npcMaster.getNpcs()) {
-            UUID uuid = npcMaster.getPlayerId(npc);
-            despawnNPC(uuid);
-            if (isDebugEnabled()) {
-                log.info("[CombatTag] Disabling npc with ID of: " + uuid);
-            }
-        }
+        Utils.getNPCHooks().onDisable();
         disableMetrics();
         //Just in case...
         log.info("[CombatTag] Disabled");
@@ -118,7 +109,7 @@ public class CombatTag extends JavaPlugin {
 
     @Override
     public void onEnable() {
-	npcMaster = new NPCMaster(this);
+	Utils.getNPCHooks().onEnable();
         tagged = new HashMap<UUID, Long>();
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
         PluginManager pm = getServer().getPluginManager();
@@ -176,22 +167,6 @@ public class CombatTag extends JavaPlugin {
         }
     }
 
-    /**
-     * Spawns an npc with the name PvPLogger at the given location, sets the npc
-     * id to be the players name
-     *
-     * @param plr
-     * @param location
-     * @return
-     */
-    public NPC spawnNpc(Player plr, Location location) {
-        if (isDebugEnabled()) {
-            log.info("[CombatTag] Spawning NPC for " + plr.getName());
-        }
-        NPC npc = npcMaster.createNPC(plr);
-        npc.spawn(location);
-        return npc;
-    }
 
     public String getNpcName(String plr) {
         String npcName = settings.getNpcName();
@@ -205,23 +180,6 @@ public class CombatTag extends JavaPlugin {
             npcName = npcName.replace("number", "" + getNpcNumber());
         }
         return npcName;
-    }
-
-    /**
-     * Despawns npc and copys all contents from npc to player data
-     *
-     * @param playerUUID
-     * @param reason
-     */
-    public void despawnNPC(UUID playerUUID) {
-        if (isDebugEnabled()) {
-            log.info("[CombatTag] Despawning NPC for " + playerUUID);
-        }
-        NPC npc = npcMaster.getNPC(playerUUID);
-        if (npc != null) {
-            updatePlayerData(npc, playerUUID);
-            npcMaster.despawn(npc);
-        }
     }
 
     /**
@@ -282,11 +240,7 @@ public class CombatTag extends JavaPlugin {
                 return true;
             } else if (args[0].equalsIgnoreCase("wipe")) {
                 if (sender.hasPermission("combattag.wipe")) {
-                    int numNPC = 0;
-                    for (NPC npc : npcMaster.getNpcs()) {
-                        despawnNPC(npcMaster.getPlayerId(npc));
-                        numNPC++;
-                    }
+                    int numNPC = Utils.getNPCHooks().wipeAll();
                     sender.sendMessage("[CombatTag] Wiped " + numNPC + " pvploggers!");
                 }
                 return true;
@@ -353,65 +307,6 @@ public class CombatTag extends JavaPlugin {
             }
         }
         return ImmutableList.of();
-    }
-
-    public void scheduleDelayedKill(final NPC npc, final UUID uuid) {
-        long despawnTicks = settings.getNpcDespawnTime() * 20L;
-        final boolean kill = settings.isNpcDieAfterTime();
-        final Player plrNpc = (Player) npc.getBukkitEntity();
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            @Override
-            public void run() {
-                if (Bukkit.getServer().getPlayer(uuid) == null) {
-                    if (npcMaster.getNPC(uuid) != null) {
-                        if (kill == true) {
-                            plrNpc.setHealth(0);
-                            updatePlayerData(npc, uuid);
-                        } else {
-                            despawnNPC(uuid);
-                        }
-                    }
-                } else if (!Bukkit.getServer().getPlayer(uuid).isOnline()) {
-                    if (npcMaster.getNPC(uuid) != null) {
-                        if (kill == true) {
-                            plrNpc.setHealth(0);
-                            updatePlayerData(npc, uuid);
-                        } else {
-                            despawnNPC(uuid);
-                        }
-                    }
-                }
-            }
-        }, despawnTicks);
-    }
-
-    /**
-     * Loads the player data using bukkit and moves the data from the npc to the
-     * offline players file
-     *
-     * @param npc
-     * @param playerUUID
-     */
-    public void updatePlayerData(NPC npc, UUID playerUUID) {
-    	AdvancedOfflinePlayer target;
-    	Player source = (Player) npc.getEntity();
-    	if (Bukkit.getPlayer(playerUUID) == null) {
-    		try {
-    			target = new NBTAdvancedOfflinePlayer(Bukkit.getOfflinePlayer(playerUUID));
-    		} catch (PlayerNotFoundException ex) {
-    			throw Throwables.propagate(ex);
-    		}
-    		target.load();
-    	} else {
-    		target = new OnlineAdvancedOfflinePlayer(Bukkit.getPlayer(playerUUID));
-    	}
-    	if (source.getHealth() <= 0) {
-    		Utils.emptyInventory(target);
-    		target.setHealth(0);
-    	} else {
-    		Utils.copyPlayer(target, source);
-    	}
-    	target.save();
     }
 
     public double healthCheck(double health) {

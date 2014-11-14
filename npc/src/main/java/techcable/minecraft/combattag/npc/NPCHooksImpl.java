@@ -26,7 +26,20 @@ public class NPCHooksImpl extends NPCHooks {
 		 npcMaster = new NPCMaster(plugin);
 		 listener = new NPCListener(this);
 	}
+
+	@Override
+	public void onDisable() {
+		wipeAll();
+	}
 	
+	public int wipeAll() {
+		int numWiped = 0;
+		for (NPC npc : getNpcMaster().getNpcs()) {
+			despawnNPC(npcMaster.getPlayerId(npc));
+			numWiped++;
+		}
+		return numWiped;
+	}
 	public NPC getNpc(UUID player) {
 		return npcMaster.getNPC(player);
 	}
@@ -53,17 +66,17 @@ public class NPCHooksImpl extends NPCHooks {
 
 	public void spawnNPC(Player player, Location location) {
 		if (isDebugEnabled()) {
-            getLog().info("[CombatTag] Spawning NPC for " + plr.getName());
-        }
-        NPC npc = getNpcMaster().createNPC(plr);
-        npc.spawn(location);
-        return npc;
+            		getLog().info("[CombatTag] Spawning NPC for " + plr.getName());
+        	}
+        	NPC npc = getNpcMaster().createNPC(plr);
+       		npc.spawn(location);
+        	return npc;
 	}
-	
+
 	public boolean isDebugEnabled() {
 	    return plugin.isDebugEnabled();
 	}
-	
+
 	public Logger getLog() {
 	    return plugin.log;
 	}
