@@ -40,11 +40,5 @@
       <artifactId>offlineplayers</artifactId>
       <version>1.1.2</version>
     </dependency>
-    <dependency>
-      <groupId>net.citizensnpcs</groupId>
-      <artifactId>citizensapi</artifactId>
-      <version>2.0.13-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 </project>

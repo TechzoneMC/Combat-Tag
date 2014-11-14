@@ -1,12 +1,16 @@
 package techcable.minecraft.combattag;
 
-import net.citizensnpcs.api.npc.NPC;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+
+import com.trc202.CombatTag.CombatTag;
 
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
 
@@ -61,8 +65,35 @@ public class Utils {
     	Bukkit.getServer().getPluginManager().callEvent(event);
     }
 
+    private static NPCHooks hooks;
+    private final static String HOOKS_CLASS = "techcable.minecraft.combattag.npc";
 	public static NPCHooks getNPCHooks() {
-		//Dont try and get the real implementation yet
-		return new NPCHooks();
+		if (hooks == null) {
+			try {
+				Class<?> clazz = Class.forName(HOOKS_CLASS);
+				Constructor<?> constructor = clazz.getConstructor(CombatTag.class);
+				constructor.setAccessible(true);
+				Object obj = constructor.newInstance(getPlugin());
+				if (obj instanceof NPCHooks) {
+					hooks = (NPCHooks) obj;
+				} else {
+					hooks = new NPCHooks();
+				}
+			} catch (Exception ex) {
+				hooks = new NPCHooks();
+			}
+		}
+		
+		return hooks;
+	}
+	
+	private final static String PLUGIN_NAME = "CombatTagReloaded"; 
+	public static CombatTag getPlugin() {
+		Plugin rawPlugin = Bukkit.getPluginManager().getPlugin(PLUGIN_NAME);
+		if (rawPlugin != null && rawPlugin instanceof CombatTag) {
+			return (CombatTag) rawPlugin;
+		} else {
+			return null;
+		}
 	}
 }

@@ -109,7 +109,7 @@ public class CombatTag extends JavaPlugin {
 
     @Override
     public void onEnable() {
-	Utils.getNPCHooks().onEnable();
+	Utils.getNPCHooks().init();
         tagged = new HashMap<UUID, Long>();
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
         PluginManager pm = getServer().getPluginManager();

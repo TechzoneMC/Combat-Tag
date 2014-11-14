@@ -39,4 +39,23 @@ public class NPCUtils {
     	}
     	target.save();
     }
+    
+    public static void copyNPC(AdvancedOfflinePlayer target, NPC source) {
+    	if (source.getEntity() instanceof Player) {
+    		Utils.copyPlayer(target, getAsPlayer(source));
+    	}
+    }
+    
+    public static void copyNPC(NPC target, Player source) {
+    	if (target.getEntity() instanceof Player) {
+    		Utils.copyPlayer(getAsPlayer(target), source);
+    	}
+    }
+    
+    public static Player getAsPlayer(NPC npc) {
+    	if (npc.getEntity() instanceof Player) {
+    		return (Player) npc.getEntity();
+    	}
+    	return null;
+    }
 }

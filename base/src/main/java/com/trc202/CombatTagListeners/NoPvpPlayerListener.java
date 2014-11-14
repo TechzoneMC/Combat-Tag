@@ -2,8 +2,6 @@ package com.trc202.CombatTagListeners;
 
 import java.util.UUID;
 
-import net.citizensnpcs.api.npc.NPC;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -69,21 +67,6 @@ public class NoPvpPlayerListener implements Listener {
                 }
                 quitPlr.damage(1000L);
                 plugin.removeTagged(playerUUID);
-            } else {
-                boolean wgCheck = true;
-                if (plugin.settings.dontSpawnInWG()) {
-                    //wgCheck = plugin.ctIncompatible.InWGCheck(quitPlr);
-                }
-                if (wgCheck) {
-                    NPC npc = plugin.spawnNpc(quitPlr, quitPlr.getLocation());
-                    Player npcPlayer = (Player) npc.getEntity();
-                    Utils.copyNPC(npc, quitPlr);
-                    npcPlayer.setHealth(plugin.healthCheck(quitPlr.getHealth()));
-                    quitPlr.getWorld().createExplosion(quitPlr.getLocation(), -1); //Create the smoke effect
-                    if (plugin.settings.getNpcDespawnTime() > 0) {
-                        plugin.scheduleDelayedKill(npc, playerUUID);
-                    }
-                }
             }
         }
     }

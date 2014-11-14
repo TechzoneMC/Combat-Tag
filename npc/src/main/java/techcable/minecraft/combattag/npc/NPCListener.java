@@ -44,13 +44,13 @@ public class NPCListener {
 		Player logger = event.getPlayer();
 		boolean shouldSpawn = true;
 		if (shouldSpawn) {
-			NPC npc = hooks.spawnNpc(logger, logger.getLocation());
+			NPC npc = hooks.spawnNPC(logger, logger.getLocation());
 			Player npcPlayer = (Player) npc.getEntity();
-			Utils.copyNPC(npc, logger);
-			npcPlayer.setHealth(plugin.healthCheck(logger.getHealth()));
+			NPCUtils.copyNPC(npc, logger);
+			npcPlayer.setHealth(hooks.healthCheck(logger.getHealth()));
 			logger.getWorld().createExplosion(logger.getLocation(), -1); // Create the smoke effect
-			if (plugin.settings.getNpcDespawnTime() > 0) {
-				plugin.scheduleDelayedKill(npc, logger.getUniqueId());
+			if (hooks.isNPCDespawnAfterTime()) {
+				hooks.scheduleDelayedDespawn(npc);
 			}
 		}
 	}
