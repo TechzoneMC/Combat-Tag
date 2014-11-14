@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import net.citizensnpcs.api.npc.NPC;
@@ -25,15 +26,25 @@ public class NPCHooksImpl extends NPCHooks {
 	
 	@Override
 	public void init() {
-		 npcMaster = new NPCMaster(getPlugin());
-		 listener = new NPCListener(this);
+		if (!isNPCEnabled()) return;
+		npcMaster = new NPCMaster(getPlugin());
+		listener = new NPCListener(this);
 	}
 
 	@Override
 	public void onDisable() {
+		if (!isNPCEnabled()) return;
 		wipeAll();
 	}
 	
+	@Override
+	public boolean isNPC(Entity entity) {
+		if (isNPCEnabled()) {
+			return getNpcMaster().isNPC(entity);
+		} else {
+			return super.isNPC(entity);
+		}
+	}
 	public int wipeAll() {
 		int numWiped = 0;
 		for (NPC npc : getNpcMaster().getNpcs()) {

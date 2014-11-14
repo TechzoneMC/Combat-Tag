@@ -2,8 +2,6 @@ package com.trc202.CombatTagListeners;
 
 import java.util.UUID;
 
-import net.citizensnpcs.api.npc.NPC;
-
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;

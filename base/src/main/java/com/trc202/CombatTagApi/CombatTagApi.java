@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 
 import com.trc202.CombatTag.CombatTag;
 
+import techcable.minecraft.combattag.Utils;
+
 public class CombatTagApi {
 
     private final CombatTag plugin;
@@ -85,7 +87,7 @@ public class CombatTagApi {
      * @return true if the player is an NPC
      */
     public boolean isNPC(Entity entity) {
-        return plugin.getNpcMaster().isNPC(entity);
+        return Utils.getNPCHooks().isNPC(entity);
     }
 
     /**

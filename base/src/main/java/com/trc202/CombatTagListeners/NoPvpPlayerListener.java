@@ -20,7 +20,6 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.trc202.CombatTag.CombatTag;
-import com.trc202.CombatTagEvents.NpcDespawnReason;
 
 import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
