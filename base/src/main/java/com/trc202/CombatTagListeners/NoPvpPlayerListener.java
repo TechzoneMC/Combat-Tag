@@ -38,24 +38,7 @@ public class NoPvpPlayerListener implements Listener {
         plugin = instance;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player loginPlayer = event.getPlayer();
-        UUID playerUUID = loginPlayer.getUniqueId();
-        if (plugin.getNpcMaster().getNPC(playerUUID) == null) {
-            return;
-        }
-        if (plugin.inTagged(playerUUID)) {
-            //Player has an NPC and is likely to need some sort of punishment
-            loginPlayer.setNoDamageTicks(0);
-            plugin.despawnNPC(playerUUID);
-            if (loginPlayer.getHealth() > 0) {
-                plugin.addTagged(loginPlayer);
-            } else {
-                plugin.removeTagged(playerUUID);
-            }
-        }
-    }
+
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent e) {

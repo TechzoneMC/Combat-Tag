@@ -43,8 +43,8 @@ import com.trc202.settings.Settings;
 import com.trc202.settings.SettingsHelper;
 import com.trc202.settings.SettingsLoader;
 
-import techcable.minecraft.combattag.NPCMaster;
 import techcable.minecraft.combattag.Utils;
+import techcable.minecraft.combattag.npc.NPCMaster;
 import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
 import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer.PlayerNotFoundException;

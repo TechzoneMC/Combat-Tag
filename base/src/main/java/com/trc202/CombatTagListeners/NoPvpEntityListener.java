@@ -46,11 +46,11 @@ public class NoPvpEntityListener implements Listener {
 	    PlayerTagEvent event = new PlayerTagEvent(tagged, dmgr);
 	    Utils.fireEvent(event);
 	    if (event.isCancelled()) {
-		return;
+	    	return;
 	    }
-            if (plugin.getNpcMaster().isNPC(tagged) || disallowedWorld(tagged.getWorld().getName())) {
+            if (disallowedWorld(tagged.getWorld().getName())) {
                 return;
-            } //If the damaged player is an npc do nothing
+            }
 
             if ((dmgr instanceof Player) && plugin.settings.playerTag()) {
                 Player damagerPlayer = (Player) dmgr;
@@ -67,18 +67,9 @@ public class NoPvpEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDeath(EntityDeathEvent event) {
-        if (plugin.getNpcMaster().isNPC(event.getEntity())) {
-            onNPCDeath(event.getEntity());
-        } else if (event.getEntity() instanceof Player) {
+        if (event.getEntity() instanceof Player) {
             onPlayerDeath((Player) event.getEntity());
         }
-    }
-
-    public void onNPCDeath(Entity entity) {
-        NPC npc = plugin.getNpcMaster().getAsNPC(entity);
-    	UUID id = plugin.getNpcMaster().getPlayerId(npc);
-        plugin.updatePlayerData(npc, id);
-        plugin.removeTagged(id);
     }
 
     public void onPlayerDeath(Player deadPlayer) {
@@ -86,10 +77,6 @@ public class NoPvpEntityListener implements Listener {
     }
 
     public void onPlayerDamageByPlayer(Player damager, Player damaged) {
-        if (plugin.getNpcMaster().isNPC(damaged)) {
-            return;
-        } //If the damaged player is an npc do nothing
-
         //if (plugin.ctIncompatible.WarArenaHook(damager) && plugin.ctIncompatible.WarArenaHook(damaged)) {
             if (!damager.hasPermission("combattag.ignore")) {
                 if (plugin.settings.blockCreativeTagging() && damager.getGameMode() == GameMode.CREATIVE) {

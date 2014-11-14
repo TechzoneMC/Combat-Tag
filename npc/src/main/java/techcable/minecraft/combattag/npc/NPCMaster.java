@@ -1,4 +1,4 @@
-package techcable.minecraft.combattag;
+package techcable.minecraft.combattag.npc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
