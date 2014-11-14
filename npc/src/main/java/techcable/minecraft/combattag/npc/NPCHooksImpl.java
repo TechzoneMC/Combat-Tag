@@ -1,6 +1,7 @@
 package techcable.minecraft.combattag.npc;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -46,11 +47,24 @@ public class NPCHooksImpl extends NPCHooks {
 		plugin.removeTagged(tagged);
 	}
 	
-	public boolean isNPCSEnabled() {
+	public boolean isNPCEnabled() {
 		return !plugin.settings.isInstaKill();
 	}
 
 	public void spawnNPC(Player player, Location location) {
-		plugin.spawnNpc(player, location);
+		if (isDebugEnabled()) {
+            getLog().info("[CombatTag] Spawning NPC for " + plr.getName());
+        }
+        NPC npc = getNpcMaster().createNPC(plr);
+        npc.spawn(location);
+        return npc;
+	}
+	
+	public boolean isDebugEnabled() {
+	    return plugin.isDebugEnabled();
+	}
+	
+	public Logger getLog() {
+	    return plugin.log;
 	}
 }

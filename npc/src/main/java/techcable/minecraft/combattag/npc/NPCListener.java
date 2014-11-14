@@ -40,11 +40,11 @@ public class NPCListener {
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPvpLog(PvPLogEvent event) {
-		if (!hooks.isNPCSEnabled()) return;
+		if (!hooks.isNPCEnabled()) return;
 		Player logger = event.getPlayer();
 		boolean shouldSpawn = true;
 		if (shouldSpawn) {
-			NPC npc = plugin.spawnNpc(logger, logger.getLocation());
+			NPC npc = hooks.spawnNpc(logger, logger.getLocation());
 			Player npcPlayer = (Player) npc.getEntity();
 			Utils.copyNPC(npc, logger);
 			npcPlayer.setHealth(plugin.healthCheck(logger.getHealth()));
@@ -67,9 +67,9 @@ public class NPCListener {
 			loginPlayer.setNoDamageTicks(0);
 			hooks.despawnNPC(playerUUID);
 			if (loginPlayer.getHealth() > 0) {
-				plugin.addTagged(loginPlayer);
+				hooks.addTagged(loginPlayer);
 			} else {
-				plugin.removeTagged(playerUUID);
+				hooks.removeTagged(playerUUID);
 			}
 		}
 	}
