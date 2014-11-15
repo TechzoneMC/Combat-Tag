@@ -11,6 +11,7 @@
 	<modules>
 	  <module>base</module>
 	  <module>npc</module>
+	  <module>instakill</module>
 	</modules>
 	<repositories>
 		<repository>

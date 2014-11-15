@@ -65,26 +65,52 @@ public class Utils {
     	Bukkit.getServer().getPluginManager().callEvent(event);
     }
 
-    private static NPCHooks hooks;
-    private final static String HOOKS_CLASS = "techcable.minecraft.combattag.npc";
+    private static NPCHooks npcHooks;
+    private final static Class<? extends NPCHooks> NPC_HOOKS_CLASS = makeClass(NPCHooks.class, "techcable.minecraft.combattag.npc.NPCHooksImpl");
 	public static NPCHooks getNPCHooks() {
-		if (hooks == null) {
-			try {
-				Class<?> clazz = Class.forName(HOOKS_CLASS);
-				Constructor<?> constructor = clazz.getConstructor(CombatTag.class);
-				constructor.setAccessible(true);
-				Object obj = constructor.newInstance(getPlugin());
-				if (obj instanceof NPCHooks) {
-					hooks = (NPCHooks) obj;
-				} else {
-					hooks = new NPCHooks();
-				}
-			} catch (Exception ex) {
-				hooks = new NPCHooks();
-			}
+		if (npcHooks == null) {
+			NPCHooks realImplementation = tryMakeHook(NPCHooks.class, getPlugin());
+			if (realImplementation == null) {
+				npcHooks = new NPCHooks();
+			} else {
+				npcHooks = realImplementation;
+			}	
 		}
 		
-		return hooks;
+		return npcHooks;
+	}
+	private final static Class<? extends InstakillHooks> INSTAKILL_HOOKS_CLASS = makeClass(InstakillHooks.class ,"techcable.minecraft.combattag.instakill.InstakillHooksImpl");
+	private static InstakillHooks instakillHooks;
+	public static InstakillHooks getInstakillHooks() {
+		if (instakillHooks == null) {
+			InstakillHooks realImplementation = tryMakeHook(InstakillHooks.class, getPlugin());
+			if (realImplementation == null) {
+				instakillHooks = new InstakillHooks();
+			} else {
+				instakillHooks = realImplementation;
+			}
+		}
+		return instakillHooks;
+	}
+	
+	public static <T> T tryMakeHook(Class<? extends T> hookClass, CombatTag plugin) {
+		if (hookClass == null) return null;
+		try {
+			Constructor<? extends T> constructor = hookClass.getConstructor(CombatTag.class);
+			constructor.setAccessible(true);
+			return constructor.newInstance(plugin);
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Class<? extends T> makeClass(Class<T> hookType, String className) {
+		try {
+			return (Class<? extends T>) Class.forName(className);
+		} catch (Exception ex) {
+			return null;
+		}
 	}
 	
 	private final static String PLUGIN_NAME = "CombatTagReloaded"; 

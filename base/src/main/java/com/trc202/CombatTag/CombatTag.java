@@ -77,6 +77,7 @@ public class CombatTag extends JavaPlugin {
 	 */
 	@Override
 	public void onDisable() {
+		Utils.getInstakillHooks().onDisable();
 		Utils.getNPCHooks().onDisable();
 		disableMetrics();
 		// Just in case...
@@ -85,6 +86,7 @@ public class CombatTag extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		Utils.getInstakillHooks().init();
 		Utils.getNPCHooks().init();
 		tagged = new HashMap<UUID, Long>();
 		settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());

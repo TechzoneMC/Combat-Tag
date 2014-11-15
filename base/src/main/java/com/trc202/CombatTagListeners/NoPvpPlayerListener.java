@@ -56,17 +56,10 @@ public class NoPvpPlayerListener implements Listener {
 	    Utils.fireEvent(event);
 	    
 	    if (event.isCancelled()) {
-		return;
+	    	return;
 	    }
 	    
 	    alertPlayers(quitPlr);
-            if (plugin.settings.isInstaKill()) {
-                if (plugin.isDebugEnabled()) {
-                    CombatTag.log.info("[CombatTag] " + quitPlr.getName() + " has been instakilled!");
-                }
-                quitPlr.damage(1000L);
-                plugin.removeTagged(playerUUID);
-            }
         }
     }
 

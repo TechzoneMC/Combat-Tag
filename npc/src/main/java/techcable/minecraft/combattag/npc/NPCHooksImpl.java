@@ -45,6 +45,7 @@ public class NPCHooksImpl extends NPCHooks {
 			return super.isNPC(entity);
 		}
 	}
+	
 	public int wipeAll() {
 		int numWiped = 0;
 		for (NPC npc : getNpcMaster().getNpcs()) {
