@@ -48,7 +48,7 @@ public class NoPvpPlayerListener implements Listener {
             plugin.entityListener.onPlayerDeath(quitPlr);
             return;
         }
-        if (plugin.isInCombat(playerUUID) && PluginCompatibility.isAuthenticated(quitPlr)) {
+        if (plugin.isInCombat(playerUUID)) {
             //Player has logged out before the pvp battle is considered over by the plugin
             
 	    PvPLogEvent event = new PvPLogEvent(quitPlr);
@@ -59,7 +59,7 @@ public class NoPvpPlayerListener implements Listener {
 	    	return;
 	    }
 	    
-	    alertPlayers(quitPlr);
+	    	alertPlayers(quitPlr);
         }
     }
 
