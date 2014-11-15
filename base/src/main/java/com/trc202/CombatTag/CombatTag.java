@@ -30,6 +30,7 @@ import com.trc202.settings.Settings;
 import com.trc202.settings.SettingsHelper;
 import com.trc202.settings.SettingsLoader;
 
+import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
 
 public class CombatTag extends JavaPlugin {
@@ -86,6 +87,7 @@ public class CombatTag extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		PluginCompatibility.registerListeners();
 		Utils.getInstakillHooks().init();
 		Utils.getNPCHooks().init();
 		tagged = new HashMap<UUID, Long>();

@@ -29,6 +29,7 @@ public class NPCHooksImpl extends NPCHooks {
 		if (!isNPCEnabled()) return;
 		npcMaster = new NPCMaster(getPlugin());
 		listener = new NPCListener(this);
+		Bukkit.getPluginManager().registerEvents(listener, getPlugin());
 	}
 
 	@Override

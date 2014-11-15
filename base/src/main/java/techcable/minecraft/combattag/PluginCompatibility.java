@@ -1,5 +1,6 @@
 package techcable.minecraft.combattag;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,9 +14,6 @@ import lombok.*;
 
 @Getter
 public class PluginCompatibility {
-	static {
-		registerListeners();
-	}
 	private PluginCompatibility() {}
 	
 	public static boolean isAuthenticated(Player player) {
@@ -33,7 +31,8 @@ public class PluginCompatibility {
 	}
 	
 	public static void registerListeners() {
-		
+		CompatibilityListener compatListener = new CompatibilityListener();
+		Bukkit.getPluginManager().registerEvents(compatListener, Utils.getPlugin());
 	}
 	
 	public static class CompatibilityListener implements Listener {

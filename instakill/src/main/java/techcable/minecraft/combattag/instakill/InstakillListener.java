@@ -1,6 +1,8 @@
 package techcable.minecraft.combattag.instakill;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import com.trc202.CombatTag.CombatTag;
@@ -14,7 +16,9 @@ import lombok.*;
 public class InstakillListener implements Listener {
 	private final InstakillHooksImpl hooks;
 	
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPvpLog(PvPLogEvent pvpLog) {
+		if (pvpLog.isCancelled()) return;
 		if (hooks.isInstakillEnabled()) return;
 		Player logger = pvpLog.getPlayer();
         if (hooks.isDebugEnabled()) {

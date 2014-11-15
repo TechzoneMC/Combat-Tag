@@ -7,6 +7,7 @@ import net.citizensnpcs.api.npc.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import com.trc202.CombatTag.CombatTag;
@@ -17,10 +18,11 @@ import techcable.minecraft.combattag.events.PvPLogEvent;
 import lombok.*;
 
 @RequiredArgsConstructor
-public class NPCListener {
+public class NPCListener implements Listener {
 
 	private final NPCHooksImpl hooks;
 	
+	@EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
 	public void onJoin(PlayerJoinEvent event) {
 		Player loginPlayer = event.getPlayer();
 		UUID playerUUID = loginPlayer.getUniqueId();
@@ -38,8 +40,9 @@ public class NPCListener {
 		}
 	}
 	
-	@EventHandler(priority=EventPriority.HIGHEST)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPvpLog(PvPLogEvent event) {
+		if (event.isCancelled()) return;
 		if (!hooks.isNPCEnabled()) return;
 		Player logger = event.getPlayer();
 		boolean shouldSpawn = true;
