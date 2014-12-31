@@ -33,25 +33,28 @@ import org.mcstats.Metrics.Plotter;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-import com.trc202.CombatTagListeners.CombatTagCommandPrevention;
-import com.trc202.CombatTagListeners.NoPvpBlockListener;
-import com.trc202.CombatTagListeners.NoPvpEntityListener;
-import com.trc202.CombatTagListeners.NoPvpPlayerListener;
 import com.trc202.settings.Settings;
 import com.trc202.settings.SettingsHelper;
 import com.trc202.settings.SettingsLoader;
 
-import techcable.minecraft.combattag.NPCMaster;
 import techcable.minecraft.combattag.Utils;
+
+import static techcable.minecraft.combattag.Utils.info;
+import static techcable.minecraft.combattag.Utils.warning;
+import static techcable.minecraft.combattag.Utils.severe;
+
+import techcable.minecraft.combattag.entity.CombatTagNPC;
+import techcable.minecraft.combattag.entity.CombatTagPlayer;
+import techcable.minecraft.combattag.listeners.CompatibilityListener;
+import techcable.minecraft.combattag.listeners.InstakillListener;
+import techcable.minecraft.combattag.listeners.NPCListener;
+import techcable.minecraft.combattag.listeners.PermissionListener;
 import techcable.minecraft.combattag.listeners.PlayerListener;
-import techcable.minecraft.combattag.scoreboard.ScoreboardManager;
+import techcable.minecraft.combattag.listeners.SettingListener;
 import techcable.minecraft.npclib.NPC;
 import techcable.minecraft.npclib.NPCLib;
-import techcable.minecraft.offlineplayers.AdvancedOfflinePlayer;
-import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer;
-import techcable.minecraft.offlineplayers.OfflinePlayers;
-import techcable.minecraft.offlineplayers.NBTAdvancedOfflinePlayer.PlayerNotFoundException;
-import techcable.minecraft.offlineplayers.wrapper.OnlineAdvancedOfflinePlayer;
+import techcable.minecraft.techutils.TechUtils;
+import techcable.minecraft.techutils.offlineplayers.AdvancedOfflinePlayer;
 
 import lombok.Getter;
 
@@ -60,27 +63,14 @@ public class CombatTag extends JavaPlugin {
     private final SettingsHelper settingsHelper;
     private final File settingsFile;
     public Settings settings;
-    public static final Logger log = Logger.getLogger("Minecraft");
     private HashMap<UUID, Long> tagged;
     private static final String mainDirectory = "plugins/CombatTag";
     private static final List<String> SUBCOMMANDS = ImmutableList.of("reload", "wipe", "command");
     private static final List<String> COMMAND_SUBCOMMANDS = ImmutableList.of("add", "remove");
 
     //public final CombatTagIncompatibles ctIncompatible = new CombatTagIncompatibles(this);
-    private final NoPvpPlayerListener plrListener = new NoPvpPlayerListener(this);
-    public final NoPvpEntityListener entityListener = new NoPvpEntityListener(this);
-    private final NoPvpBlockListener blockListener = new NoPvpBlockListener(this);
-    private final CombatTagCommandPrevention commandPreventer = new CombatTagCommandPrevention(this);
 
     private int npcNumber;
-
-    //Techcable Variables
-    @Getter
-    private ScoreboardManager scoreboardManager;
-    @Getter
-    private NPCMaster npcMaster;
-    @Getter
-    private PlayerListener playerListener = new PlayerListener(this);
     public CombatTag() {
         settings = new Settings();
         new File(mainDirectory).mkdirs();
@@ -111,51 +101,37 @@ public class CombatTag extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-        if (npcMaster != null) {
-            for (NPC npc : npcMaster.getNpcs()) {
-                UUID uuid = npcMaster.getPlayerId(npc);
-                despawnNPC(uuid);
-                if (isDebugEnabled()) {
-                    log.info("[CombatTag] Disabling npc with ID of: " + uuid);
-                }
-            }
+        for (CombatTagNPC npc : CombatTagNPC.getAllNpcs()) {
+        	npc.despawn();
         }
         disableMetrics();
         //Just in case...
-        log.info("[CombatTag] Disabled");
+        info("Disabled");
     }
 
     @Override
     public void onEnable() {
         settings = new SettingsLoader().loadSettings(settingsHelper, this.getDescription().getVersion());
-        if (Bukkit.getScoreboardManager() != null /* Supports scoreboards */)  {
-            scoreboardManager = new ScoreboardManager(this);
-        }
         if (!settings.isInstaKill()) {
-            if (NPCLib.isSupported()) npcMaster = new NPCMaster(this);
-            else {
-                log.severe("[CombatTag] NPCs are enabled but this version of minecraft isn't supported");
-                log.severe("[CombatTag] Please install citizens or update CombatTag if you want to use npcs");
+            if (!NPCLib.isSupported() ){
+                severe("NPCs are enabled but this version of minecraft isn't supported");
+                severe("[CombatTag] Please install citizens or update CombatTag if you want to use npcs");
                 setEnabled(false);
                 return;
             }
         }
-        OfflinePlayers.setDebug(settings.isDebugEnabled());
+        TechUtils.setDebug(settings.isDebugEnabled());
         tagged = new HashMap<UUID, Long>();
         PluginManager pm = getServer().getPluginManager();
         //ctIncompatible.startup(pm);
         if (!initMetrics()) {
-            log.warning("Unable to initialize metrics");
+            getLogger().warning("Unable to initialize metrics");
         } else {
-            if (isDebugEnabled()) log.info("Enabled Metrics");
+            if (isDebugEnabled()) getLogger().info("Enabled Metrics");
         }
-        pm.registerEvents(plrListener, this);
-        pm.registerEvents(entityListener, this);
-        pm.registerEvents(commandPreventer, this);
-        pm.registerEvents(blockListener, this);
-        pm.registerEvents(playerListener, this);
+        registerListeners();
 
-        log.info("[" + getDescription().getName() + "]" + " has loaded with a tag time of " + settings.getTagDuration() + " seconds");
+        info("has loaded with a tag time of " + settings.getTagDuration() + " seconds");
     }
 
     public long getRemainingTagTime(UUID uuid) {
@@ -198,24 +174,6 @@ public class CombatTag extends JavaPlugin {
         }
     }
 
-    /**
-     * Spawns an npc with the name PvPLogger at the given location, sets the npc
-     * id to be the players name
-     *
-     * @param plr
-     * @param location
-     * @return
-     */
-    public NPC spawnNpc(Player plr, Location location) {
-        if (npcMaster == null) return null;
-        if (isDebugEnabled()) {
-            log.info("[CombatTag] Spawning NPC for " + plr.getName());
-        }
-        NPC npc = npcMaster.createNPC(plr);
-        npc.spawn(location);
-        return npc;
-    }
-
     public String getNpcName(String plr) {
         String npcName = settings.getNpcName();
         if (!(npcName.contains("player") || npcName.contains("number"))) {
@@ -229,25 +187,6 @@ public class CombatTag extends JavaPlugin {
         }
         return npcName;
     }
-
-    /**
-     * Despawns npc and copys all contents from npc to player data
-     *
-     * @param playerUUID
-     * @param reason
-     */
-    public void despawnNPC(UUID playerUUID) {
-        if (npcMaster == null) return;
-        if (isDebugEnabled()) {
-            log.info("[CombatTag] Despawning NPC for " + playerUUID);
-        }
-        NPC npc = npcMaster.getNPC(playerUUID);
-        if (npc != null) {
-            updatePlayerData(npc, playerUUID);
-            npcMaster.despawn(npc);
-        }
-    }
-
     /**
      *
      * @return the system tag duration as set by the user
@@ -264,7 +203,7 @@ public class CombatTag extends JavaPlugin {
         PlayerInventory targetInv = target.getInventory();
         targetInv.clear();
         if (isDebugEnabled()) {
-            log.info("[CombatTag] " + target.getName() + " has been killed by Combat Tag and their inventory has been emptied through UpdatePlayerData.");
+            info("[CombatTag] " + target.getName() + " has been killed by Combat Tag and their inventory has been emptied through UpdatePlayerData.");
         }
     }
 
@@ -287,7 +226,7 @@ public class CombatTag extends JavaPlugin {
                         sender.sendMessage(settings.getCommandMessageNotTagged());
                     }
                 } else {
-                    log.info("[CombatTag] /ct can only be used by a player!");
+                    info("[CombatTag] /ct can only be used by a player!");
                 }
                 return true;
             } else if (args[0].equalsIgnoreCase("reload")) {
@@ -296,7 +235,7 @@ public class CombatTag extends JavaPlugin {
                     if (sender instanceof Player) {
                         sender.sendMessage(ChatColor.RED + "[CombatTag] Settings were reloaded!");
                     } else {
-                        log.info("[CombatTag] Settings were reloaded!");
+                        info("[CombatTag] Settings were reloaded!");
                     }
                 } else {
                     if (sender instanceof Player) {
@@ -305,12 +244,12 @@ public class CombatTag extends JavaPlugin {
                 }
                 return true;
             } else if (args[0].equalsIgnoreCase("wipe")) {
-                if (npcMaster == null) return false;
-                if (sender.hasPermission("combattag.wipe")) {
+                if (!NPCLib.isSupported()) {
+                	sender.sendMessage(ChatColor.RED + "[CombatTag] npcs aren't supported");
+                } else if (sender.hasPermission("combattag.wipe")) {
                     int numNPC = 0;
-                    for (NPC npc : npcMaster.getNpcs()) {
-                        despawnNPC(npcMaster.getPlayerId(npc));
-                        numNPC++;
+                    for (CombatTagNPC npc : CombatTagNPC.getAllNpcs()) {
+                    	npc.despawn();
                     }
                     sender.sendMessage("[CombatTag] Wiped " + numNPC + " pvploggers!");
                 }
@@ -380,66 +319,6 @@ public class CombatTag extends JavaPlugin {
         return ImmutableList.of();
     }
 
-    public void scheduleDelayedKill(final NPC npc, final UUID uuid) {
-        if (npcMaster == null) return;
-        long despawnTicks = settings.getNpcDespawnTime() * 20L;
-        final boolean kill = settings.isNpcDieAfterTime();
-        final Player plrNpc = (Player) npc.getEntity();
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-            @Override
-            public void run() {
-                if (Bukkit.getServer().getPlayer(uuid) == null) {
-                    if (npcMaster.getNPC(uuid) != null) {
-                        if (kill == true) {
-                            plrNpc.setHealth(0);
-                            updatePlayerData(npc, uuid);
-                        } else {
-                            despawnNPC(uuid);
-                        }
-                    }
-                } else if (!Bukkit.getServer().getPlayer(uuid).isOnline()) {
-                    if (npcMaster.getNPC(uuid) != null) {
-                        if (kill == true) {
-                            plrNpc.setHealth(0);
-                            updatePlayerData(npc, uuid);
-                        } else {
-                            despawnNPC(uuid);
-                        }
-                    }
-                }
-            }
-        }, despawnTicks);
-    }
-
-    /**
-     * Loads the player data using bukkit and moves the data from the npc to the
-     * offline players file
-     *
-     * @param npc
-     * @param playerUUID
-     */
-    public void updatePlayerData(NPC npc, UUID playerUUID) {
-        AdvancedOfflinePlayer target;
-        Player source = (Player) npc.getEntity();
-        if (Bukkit.getPlayer(playerUUID) == null) {
-            try {
-                target = new NBTAdvancedOfflinePlayer(Bukkit.getOfflinePlayer(playerUUID));
-            } catch (PlayerNotFoundException ex) {
-                throw Throwables.propagate(ex);
-            }
-            target.load();
-        } else {
-            target = new OnlineAdvancedOfflinePlayer(Bukkit.getPlayer(playerUUID));
-        }
-        if (source.getHealth() <= 0) {
-            Utils.emptyInventory(target);
-            target.setHealth(0);
-        } else {
-            Utils.copyPlayer(target, source);
-        }
-        target.save();
-    }
-
     public double healthCheck(double health) {
         if (health < 0) {
             health = 0;
@@ -501,5 +380,17 @@ public class CombatTag extends JavaPlugin {
         if (settings.isUpdateEnabled()) {
             Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true);
         }
+    }
+    public void registerListeners() {
+    	PluginManager manager = Bukkit.getPluginManager();
+    	if (settings.isInstaKill()) {
+    		manager.registerEvents(new InstakillListener(), this);
+    	} else {
+    		manager.registerEvents(new NPCListener(), this);
+    	}
+    	manager.registerEvents(new PermissionListener(), this);
+    	manager.registerEvents(new CompatibilityListener(), this);
+    	manager.registerEvents(new PlayerListener(), this);
+    	manager.registerEvents(new SettingListener(), this);
     }
 }

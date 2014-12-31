@@ -1,36 +1,78 @@
 package techcable.minecraft.combattag.listeners;
 
+import java.util.Set;
+import java.util.UUID;
+
+import javax.persistence.EntityListeners;
+
 import org.bukkit.Bukkit;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import com.google.common.collect.Sets;
 import com.trc202.CombatTag.CombatTag;
 
+import techcable.minecraft.combattag.CombatTagAPI;
 import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
+import techcable.minecraft.combattag.entity.CombatTagPlayer;
+import techcable.minecraft.combattag.event.CombatLogEvent;
+import techcable.minecraft.combattag.event.CombatTagEvent;
+import techcable.minecraft.techutils.TechUtils;
 
 public class PlayerListener implements Listener {
-    private CombatTag plugin;
-    public PlayerListener(CombatTag plugin) {
-        this.plugin = plugin;
-    }
-
+    public static final double KNOCKBACK_POWER = 1.5;
+    
+    /*
+     * Highly buggy
+     *
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if (!plugin.settings.isStopCombatSafezoning()) return;
+        if (!Utils.getPlugin().settings.isStopCombatSafezoning()) return;
         if (event.getPlayer().hasPermission("combattag.safezone.ignore"));
-        if (!plugin.inTagged(event.getPlayer().getUniqueId())) return;
+        if (!Utils.getPlugin().inTagged(event.getPlayer().getUniqueId())) return;
         if (PluginCompatibility.isPvpDisabled(event.getTo())) {
-            event.getPlayer().setVelocity(reverse(event.getPlayer().getVelocity()));
+            knockback(event.getPlayer());
             event.getPlayer().sendMessage("[CombatTag] You can't enter a safezone while combat tagged");
         }
     }
-
-    public static Vector reverse(Vector vector) {
-	Vector reverse = vector.multiply(-1);
-	reverse.setY(0); //Don't fly
-	return reverse;
+    */
+    public static void knockback(Player player) {
+    	if (TechUtils.getTechPlayer(player).isOnline()) {
+    		TechUtils.getTechPlayer(player).knockback(KNOCKBACK_POWER);
+    	}
+    }
+    @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
+    public void onDamage(EntityDamageByEntityEvent event) {
+    	if (!(event.getEntity() instanceof Player)) return; //Not a player
+    	CombatTagPlayer defender = CombatTagPlayer.getPlayer(((Player)event.getEntity()).getUniqueId());
+    	LivingEntity attacker = Utils.getRootDamager(event.getDamager());
+    	if (attacker == null) return;
+    	if (!CombatTagAPI.getPlugin().settings.mobTag() && !(attacker instanceof Player)) return; //Attacker is a player and mob tag is set to false 
+    	CombatTagEvent logEvent = new CombatTagEvent(defender, attacker);
+    	Utils.fire(logEvent);
+    	if (!logEvent.isCancelled()) {
+    		if (logEvent.isTagDefender()) defender.tag();
+    		if (logEvent.isAttackerPlayer() && logEvent.isTagAttacker()) {
+    			logEvent.attackerAsPlayer().tag();
+    		}
+    	}
+    }
+    @EventHandler(priority=EventPriority.MONITOR)
+    public void onQuit(PlayerQuitEvent event) {
+    	if (CombatTagAPI.isNPC(event.getPlayer())) return; //Don't combat log npcs
+    	CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer().getUniqueId());
+    	if (player.isTagged()) {
+    		Utils.fire(new CombatLogEvent(player));
+    	}
     }
 }

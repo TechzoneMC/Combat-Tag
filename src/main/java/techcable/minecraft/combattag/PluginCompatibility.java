@@ -5,7 +5,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 
-import techcable.minecraft.factionsapi.FactionsAPI;
+import techcable.minecraft.techutils.libs.factionsapi.FactionsAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

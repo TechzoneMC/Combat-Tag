@@ -6,6 +6,9 @@ import org.bukkit.entity.Player;
 
 import com.trc202.CombatTag.CombatTag;
 
+import techcable.minecraft.combattag.CombatTagAPI;
+import techcable.minecraft.combattag.entity.CombatTagNPC;
+
 /**
  * @deprecated see techcable.minecraft.combattag CombatTagAPI
  */
@@ -95,8 +98,7 @@ public class CombatTagApi {
      */
     @Deprecated
     public boolean isNPC(Entity entity) {
-    	if (plugin.getNpcMaster() == null) return false;
-        return plugin.getNpcMaster().isNPC(entity);
+    	return CombatTagAPI.isNPC(entity);
     }
 
     /**
