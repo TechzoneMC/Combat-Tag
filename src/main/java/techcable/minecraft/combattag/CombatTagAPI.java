@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 
 import com.trc202.CombatTag.CombatTag;
 
+import techcable.minecraft.combattag.entity.CombatTagNPC;
+import techcable.minecraft.npclib.NPCLib;
 import techcable.minecraft.techutils.entity.TechPlayer;
 
 import lombok.*;
@@ -69,7 +71,7 @@ public class CombatTagAPI {
 	 * @return true if entity is a NPC
 	 */
 	public static boolean isNPC(Entity entity) {
-		return CombatTagAPI.isNPC(entity);
+		return CombatTagNPC.isNPC(entity);
 	}
 	
 	/**
