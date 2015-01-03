@@ -67,8 +67,8 @@ public class Utils {
     	if (damager instanceof Projectile) {
     		Projectile projectile = (Projectile) damager;
     		ProjectileSource source = projectile.getShooter();
-    		if (source instanceof LivingEntity) {
-    			return getRootDamager(damager);
+    		if (source instanceof Entity) {
+    			return getRootDamager((Entity)source);
     		} else {
     			return null;
     		}

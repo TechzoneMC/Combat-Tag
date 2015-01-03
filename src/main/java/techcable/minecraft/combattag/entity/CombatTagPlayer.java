@@ -61,10 +61,6 @@ public class CombatTagPlayer extends TechPlayer {
 		return npc != null;
 	}
 	
-	public boolean isOnline() {
-		return getPlayer().isOnline();
-	}
-	
 	private static EasyCache<UUID, CombatTagPlayer> playerCache = EasyCache.makeCache(new Loader<UUID, CombatTagPlayer>() {
 
 		@Override
