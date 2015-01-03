@@ -21,10 +21,6 @@
 		    <url>http://repo.mcstats.org/content/repositories/public</url>
 		</repository>
 		<repository>
-		    <id>gravity-repo</id>
-		    <url>http://repo.gravitydevelopment.net/</url>
-		</repository>
-		<repository>
 			<id>authme-repo</id>
 			<url>http://repository-authme.forge.cloudbees.com/snapshot/</url>
 		</repository>
