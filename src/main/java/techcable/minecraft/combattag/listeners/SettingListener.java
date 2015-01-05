@@ -18,6 +18,7 @@ import com.trc202.settings.Settings;
 
 import techcable.minecraft.combattag.Utils;
 import techcable.minecraft.combattag.entity.CombatTagPlayer;
+import techcable.minecraft.combattag.event.CombatTagByPlayerEvent;
 import techcable.minecraft.combattag.event.CombatTagEvent;
 
 import lombok.*;
@@ -26,20 +27,20 @@ public class SettingListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onCombatTagMonitor(CombatTagEvent event) {
 		event.getDefender().getPlayer().sendMessage(getSettings().getTagMessageDamaged().replace("[player]", Utils.getName(event.getAttacker())));
-		if (getSettings().isSendMessageWhenTagged() && event.isAttackerPlayer()) {
-			event.attackerAsPlayer().getPlayer().sendMessage(getSettings().getTagMessageDamager().replace("[player]", event.getDefender().getName()));
-		}
 		if (getSettings().blockFly() && event.getDefender().getPlayer().isFlying()) {
 			event.getDefender().getPlayer().setFlying(false);
+		}
+	}
+	
+	public void onCombatTagByPlayerMonitor(CombatTagByPlayerEvent event) {
+		if (getSettings().isSendMessageWhenTagged()) {
+			event.getAttacker().sendMessage(getSettings().getTagMessageDamager().replace("[player]", event.getDefender().getName()));
 		}
 	}
 	
 
 	@EventHandler(ignoreCancelled = true)
 	public void onCombatTag(CombatTagEvent event) {
-		if (event.isAttackerPlayer() && event.attackerAsPlayer().getPlayer().getGameMode().equals(GameMode.CREATIVE) && getSettings().blockCreativeTagging()) {
-			event.setCancelled(true); // Block creative tagging
-		}
 		if (getSettings().onlyDamagerTagged()) {
 			event.setTagDefender(false);
 		}
@@ -47,9 +48,13 @@ public class SettingListener implements Listener {
 			event.setCancelled(true); // Block combat tag in disabled worlds
 		}
 	}
-
+	@EventHandler
+	public void onCombatTagByPlayer(CombatTagByPlayerEvent event) {
+		if (getSettings().blockCreativeTagging() && event.getAttacker().getGameMode().equals(GameMode.CREATIVE)) {
+			event.setCancelled(true);
+		}
+	}
 	
-
 	public Settings getSettings() {
 		return Utils.getPlugin().settings;
 	}

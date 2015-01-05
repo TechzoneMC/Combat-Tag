@@ -86,7 +86,7 @@ public class Utils {
     		return null;
     	}
     }
-    public static String getName(Entity entity) {
+    public static String getName(LivingEntity entity) {
     	if (entity instanceof HumanEntity) {
     		return ((HumanEntity)entity).getName();
     	} else {

@@ -28,15 +28,12 @@ import lombok.*;
 @Getter
 @RequiredArgsConstructor
 public class CombatTagNPC {
-	public CombatTagNPC(UUID npcId) {
-		this(registry.getByUUID(npcId));
-	}
+	private final UUID npcId;
 	
-	private final NPC npc;
 	private static final NPCRegistry registry = NPCLib.getNPCRegistry("CombatTagReloaded");
 	
 	public Player getAsPlayer() {
-		return (Player) npc.getEntity();
+		return (Player) getNpc().getEntity();
 	}
 	
 	public CombatTagPlayer getPlayer() {
@@ -45,12 +42,12 @@ public class CombatTagNPC {
 	
 	public void despawn() {
 		syncInventory();
-		if (getNpc().isSpawned()) npc.despawn();
+		if (getNpc().isSpawned()) getNpc().despawn();
 		Utils.debug("Despawned npc for " + getPlayer().getName());
 	}
 	
 	public void spawn(Location toSpawn) {
-		if (!getNpc().isSpawned()) npc.spawn(toSpawn);
+		getNpc().spawn(toSpawn);
 	}
 	
 
@@ -67,6 +64,10 @@ public class CombatTagNPC {
 	public void scheduleDelayedDespawn(long delay, boolean kill) {
 		NPCDelayedDespawn task = new NPCDelayedDespawn(this, kill);
 		task.runTaskLater(Utils.getPlugin(), delay);
+	}
+	
+	public NPC getNpc() {
+		return registry.getByUUID(getNpcId());
 	}
 	
 	@RequiredArgsConstructor
@@ -97,7 +98,6 @@ public class CombatTagNPC {
 		
 	});
 	public static CombatTagNPC getNPC(UUID player) {
-		Preconditions.checkState(registry.getByUUID(player) != null, "NPC isn't in registry");
 		return npcCache.get(player);
 	}
 	public static CombatTagNPC createNPC(UUID player) {

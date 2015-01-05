@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import techcable.minecraft.combattag.event.CombatLogEvent;
+import techcable.minecraft.combattag.event.CombatTagByPlayerEvent;
 import techcable.minecraft.combattag.event.CombatTagEvent;
 
 public class PermissionListener implements Listener {
@@ -20,7 +21,10 @@ public class PermissionListener implements Listener {
 		if (event.getDefender().getPlayer().hasPermission(DONT_COMBAT_TAG_PERM)) {
 			event.setTagDefender(false);
 		}
-		if (event.isAttackerPlayer() && event.attackerAsPlayer().getPlayer().hasPermission(DONT_COMBAT_TAG_PERM)) {
+	}
+	@EventHandler
+	public void onCombatTagByPlayer(CombatTagByPlayerEvent event) {
+		if (event.getAttacker().hasPermission(DONT_COMBAT_TAG_PERM)) {
 			event.setTagAttacker(false);
 		}
 	}

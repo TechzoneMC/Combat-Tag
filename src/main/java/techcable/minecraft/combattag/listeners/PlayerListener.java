@@ -26,6 +26,7 @@ import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
 import techcable.minecraft.combattag.entity.CombatTagPlayer;
 import techcable.minecraft.combattag.event.CombatLogEvent;
+import techcable.minecraft.combattag.event.CombatTagByPlayerEvent;
 import techcable.minecraft.combattag.event.CombatTagEvent;
 import techcable.minecraft.techutils.TechUtils;
 
@@ -57,14 +58,20 @@ public class PlayerListener implements Listener {
     	CombatTagPlayer defender = CombatTagPlayer.getPlayer(((Player)event.getEntity()).getUniqueId());
     	LivingEntity attacker = Utils.getRootDamager(event.getDamager());
     	if (attacker == null) return;
-    	if (!CombatTagAPI.getPlugin().settings.mobTag() && !(attacker instanceof Player)) return; //Attacker is a player and mob tag is set to false 
-    	CombatTagEvent logEvent = new CombatTagEvent(defender, attacker);
-    	Utils.fire(logEvent);
-    	if (!logEvent.isCancelled()) {
-    		if (logEvent.isTagDefender()) defender.tag();
-    		if (logEvent.isAttackerPlayer() && logEvent.isTagAttacker()) {
-    			logEvent.attackerAsPlayer().tag();
-    		}
+    	if (attacker instanceof Player) {
+    		CombatTagByPlayerEvent tagEvent = new CombatTagByPlayerEvent(defender, (Player)attacker);
+    		if (tagEvent.getDefender().isTagged() && tagEvent.getCTAttacker().isTagged()) return;
+    		Utils.fire(tagEvent);
+    		if (tagEvent.isCancelled()) return;
+    		if (tagEvent.isTagDefender()) defender.tag();
+    		if (tagEvent.isTagAttacker()) tagEvent.getCTAttacker().tag();
+    	} else {
+    		if (!Utils.getPlugin().settings.mobTag()) return;
+    		CombatTagEvent tagEvent = new CombatTagEvent(defender, attacker);
+    		if (defender.isTagged()) return;
+    		Utils.fire(tagEvent);
+    		if (tagEvent.isCancelled()) return;
+    		if (tagEvent.isTagDefender()) defender.tag();
     	}
     }
     @EventHandler(priority=EventPriority.MONITOR)

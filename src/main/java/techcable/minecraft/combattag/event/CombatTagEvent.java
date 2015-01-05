@@ -17,8 +17,6 @@ public class CombatTagEvent extends Event implements Cancellable {
 	private final LivingEntity attacker;
 	@Setter
 	private boolean tagDefender = true;
-	@Setter
-	private boolean tagAttacker = true;
 	@Getter
 	private static final HandlerList handlerList = new HandlerList();
 	@Setter
@@ -26,12 +24,5 @@ public class CombatTagEvent extends Event implements Cancellable {
 	@Override
 	public HandlerList getHandlers() {
 		return getHandlerList();
-	}
-	public boolean isAttackerPlayer() {
-		return attacker instanceof Player;
-	}
-	public CombatTagPlayer attackerAsPlayer() {
-		Player attackPlayer = (Player) attacker;
-		return CombatTagPlayer.getPlayer(attackPlayer.getUniqueId()); 
 	}
 }

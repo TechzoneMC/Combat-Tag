@@ -18,6 +18,7 @@ public class NPCListener implements Listener {
 	public void onCombatLog(CombatLogEvent event) {
 		CombatTagPlayer player = event.getPlayer();
 		player.createNPC();
+		player.getNpc().spawn(player.getLocation());
 		player.copyToNPC();
 		if (getSettings().getNpcDespawnTime() > 0) {
 			player.getNpc().scheduleDelayedDespawn(getSettings().getNpcDespawnTime() * 1000, getSettings().isNpcDieAfterTime());
