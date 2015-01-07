@@ -9,10 +9,6 @@
 	</properties>
 	<repositories>
 		<repository>
-			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-		</repository>
-		<repository>
 			<id>techcable-repo</id>
 			<url>http://repo.techcable.net/content/groups/public/</url>
 		</repository>
@@ -60,8 +56,8 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>techcable.minecraft</groupId>
-			<artifactId>techutils</artifactId>
+			<groupId>net.techcable.minecraft.techutils</groupId>
+			<artifactId>core</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

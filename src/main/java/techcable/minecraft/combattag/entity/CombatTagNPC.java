@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import net.techcable.minecraft.techutils.offlineplayer.PlayerData;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -19,10 +21,8 @@ import techcable.minecraft.npclib.NPCRegistry;
 import techcable.minecraft.techutils.InventoryUtils;
 import techcable.minecraft.techutils.TechUtils;
 import techcable.minecraft.techutils.UUIDUtils;
-import techcable.minecraft.techutils.offlineplayers.AdvancedOfflinePlayer;
 import techcable.minecraft.techutils.utils.EasyCache;
 import techcable.minecraft.techutils.utils.EasyCache.Loader;
-
 import lombok.*;
 
 @Getter
@@ -52,11 +52,11 @@ public class CombatTagNPC {
 	
 
 	public void syncInventory() {
-		AdvancedOfflinePlayer player = getPlayer().getAdvancedOfflinePlayer();
+		PlayerData player = getPlayer().getAdvancedOfflinePlayer();
 		if (getNpc().getEntity().isDead()) {
 			InventoryUtils.emptyInventory(player);
 		} else {
-			AdvancedOfflinePlayer npcPlayer = TechUtils.getAdvancedOfflinePlayer(getAsPlayer());
+			PlayerData npcPlayer = TechUtils.getPlayerData(getAsPlayer());
 			InventoryUtils.copy(npcPlayer, player);
 		}
 	}

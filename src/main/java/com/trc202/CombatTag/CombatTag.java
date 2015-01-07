@@ -54,7 +54,6 @@ import techcable.minecraft.combattag.listeners.SettingListener;
 import techcable.minecraft.npclib.NPC;
 import techcable.minecraft.npclib.NPCLib;
 import techcable.minecraft.techutils.TechUtils;
-import techcable.minecraft.techutils.offlineplayers.AdvancedOfflinePlayer;
 
 import lombok.Getter;
 
