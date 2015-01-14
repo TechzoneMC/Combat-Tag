@@ -52,7 +52,7 @@ public class CombatTagNPC {
 	
 
 	public void syncInventory() {
-		PlayerData player = getPlayer().getAdvancedOfflinePlayer();
+		PlayerData player = TechUtils.getPlayerData(getPlayer().getUuid());
 		if (getNpc().getEntity().isDead()) {
 			InventoryUtils.emptyInventory(player);
 		} else {
