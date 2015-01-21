@@ -21,8 +21,11 @@ public class CompatibilityListener implements Listener {
             		event.setCancelled(true);
 			return;
         	}
-        	if ((Utils.getRootDamager(event.getDamager()) != null) && (Utils.getRootDamager(event.getDamager()) instanceof Player) && !Utils.getRootDamager(event.getDamager()).isAuthenticated()) {
+        	if ((Utils.getRootDamager(event.getDamager()) != null) && 
+        		(Utils.getRootDamager(event.getDamager()) instanceof Player) && 
+        		!PluginCompatibility.isAuthenticated((Player)Utils.getRootDamager(event.getDamager()))) {
             		event.setCancelled(true);
+            		return;
         	}
      	}
 }
