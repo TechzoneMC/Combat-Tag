@@ -22,7 +22,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -53,11 +52,21 @@ import techcable.minecraft.combattag.listeners.PlayerListener;
 import techcable.minecraft.combattag.listeners.SettingListener;
 import techcable.minecraft.npclib.NPC;
 import techcable.minecraft.npclib.NPCLib;
-import techcable.minecraft.techutils.TechUtils;
+import techcable.minecraft.techutils.TechPlugin;
+import techcable.minecraft.techutils.entity.TechPlayerFactory;
 
 import lombok.Getter;
 
-public class CombatTag extends JavaPlugin {
+public class CombatTag extends TechPlugin<CombatTagPlayer> {
+
+    @Override
+    public TechPlayerFactory<CombatTagPlayer> getPlayerFactory() {
+        return new TechPlayerFactory<CombatTagPlayer>() {
+            public CombatTagPlayer createPlayer(UUID player, TechPlugin<CombatTagPlayer> plugin) {
+                return new CombatTagPlayer(player, (CombatTag)plugin);
+            }
+        };
+    }
 
     private final SettingsHelper settingsHelper;
     private final File settingsFile;
@@ -119,7 +128,6 @@ public class CombatTag extends JavaPlugin {
                 return;
             }
         }
-        TechUtils.setDebug(settings.isDebugEnabled());
         tagged = new HashMap<UUID, Long>();
         PluginManager pm = getServer().getPluginManager();
         //ctIncompatible.startup(pm);
@@ -196,14 +204,6 @@ public class CombatTag extends JavaPlugin {
 
     public boolean isDebugEnabled() {
         return settings.isDebugEnabled();
-    }
-
-    public void emptyInventory(Player target) {
-        PlayerInventory targetInv = target.getInventory();
-        targetInv.clear();
-        if (isDebugEnabled()) {
-            info("[CombatTag] " + target.getName() + " has been killed by Combat Tag and their inventory has been emptied through UpdatePlayerData.");
-        }
     }
 
     public int getNpcNumber() {

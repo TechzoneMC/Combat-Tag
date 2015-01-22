@@ -24,11 +24,11 @@ import com.trc202.CombatTag.CombatTag;
 import techcable.minecraft.combattag.CombatTagAPI;
 import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
+import static techcable.minecraft.combattag.Utils.getPlugin;
 import techcable.minecraft.combattag.entity.CombatTagPlayer;
 import techcable.minecraft.combattag.event.CombatLogEvent;
 import techcable.minecraft.combattag.event.CombatTagByPlayerEvent;
 import techcable.minecraft.combattag.event.CombatTagEvent;
-import techcable.minecraft.techutils.TechUtils;
 
 public class PlayerListener implements Listener {
     public static final double KNOCKBACK_POWER = 1.5;
@@ -48,14 +48,14 @@ public class PlayerListener implements Listener {
     }
     */
     public static void knockback(Player player) {
-    	if (TechUtils.getTechPlayer(player).isOnline()) {
-    		TechUtils.getTechPlayer(player).knockback(KNOCKBACK_POWER);
+    	if (getPlugin().getPlayer(player).isOnline()) {
+    		getPlugin().getPlayer(player).knockback(KNOCKBACK_POWER);
     	}
     }
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onDamage(EntityDamageByEntityEvent event) {
     	if (!(event.getEntity() instanceof Player)) return; //Not a player
-    	CombatTagPlayer defender = CombatTagPlayer.getPlayer(((Player)event.getEntity()).getUniqueId());
+    	CombatTagPlayer defender = getPlugin().getPlayer(((Player)event.getEntity()).getUniqueId());
     	LivingEntity attacker = Utils.getRootDamager(event.getDamager());
     	if (attacker == null) return;
     	if (attacker instanceof Player) {
@@ -77,7 +77,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent event) {
     	if (CombatTagAPI.isNPC(event.getPlayer())) return; //Don't combat log npcs
-    	CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer().getUniqueId());
+    	CombatTagPlayer player = getPlugin().getPlayer(event.getPlayer().getUniqueId());
     	if (player.isTagged()) {
     		Utils.fire(new CombatLogEvent(player));
     	}

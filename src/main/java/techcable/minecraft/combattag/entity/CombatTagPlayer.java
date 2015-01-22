@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Preconditions;
+import com.trc202.CombatTag.CombatTag;
 
 import fr.xephi.authme.cache.auth.PlayerCache;
 
@@ -25,9 +26,14 @@ import lombok.*;
 @Getter
 public class CombatTagPlayer extends TechPlayer {
 	private long remainingTagTime;
-	public CombatTagPlayer(UUID player) {
-		super(player);
+	public CombatTagPlayer(UUID player, CombatTag plugin) {
+		super(player, plugin);
 	}
+	
+	public CombatTag getPlugin() {
+	    return (CombatTag) super.getPlugin();
+	}
+	
 	@Setter
 	private CombatTagNPC npc;
 	
@@ -61,16 +67,8 @@ public class CombatTagPlayer extends TechPlayer {
 		return npc != null;
 	}
 	
-	private static EasyCache<UUID, CombatTagPlayer> playerCache = EasyCache.makeCache(new Loader<UUID, CombatTagPlayer>() {
-
-		@Override
-		public CombatTagPlayer load(UUID key) {
-			return new CombatTagPlayer(key);
-		}
-		
-	});
 	public static CombatTagPlayer getPlayer(UUID id) {
-		return playerCache.get(id);
+		return Utils.getPlugin().getPlayer(id);
 	}
 	public static CombatTagPlayer getPlayer(OfflinePlayer player) {
 		return getPlayer(player.getUniqueId());

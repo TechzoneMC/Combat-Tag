@@ -15,11 +15,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.base.Preconditions;
 
 import techcable.minecraft.combattag.Utils;
+import static techcable.minecraft.combattag.Utils.getPlugin;
 import techcable.minecraft.npclib.NPC;
 import techcable.minecraft.npclib.NPCLib;
 import techcable.minecraft.npclib.NPCRegistry;
 import techcable.minecraft.techutils.InventoryUtils;
-import techcable.minecraft.techutils.TechUtils;
 import techcable.minecraft.techutils.UUIDUtils;
 import techcable.minecraft.techutils.utils.EasyCache;
 import techcable.minecraft.techutils.utils.EasyCache.Loader;
@@ -52,11 +52,11 @@ public class CombatTagNPC {
 	
 
 	public void syncInventory() {
-		PlayerData player = TechUtils.getPlayerData(getPlayer().getUuid());
+		PlayerData player = getPlugin().getPlayerData(getPlayer().getUuid());
 		if (getNpc().getEntity().isDead()) {
 			InventoryUtils.emptyInventory(player);
 		} else {
-			PlayerData npcPlayer = TechUtils.getPlayerData(getAsPlayer());
+			PlayerData npcPlayer = getPlugin().getPlayerData(getAsPlayer());
 			InventoryUtils.copy(npcPlayer, player);
 		}
 	}

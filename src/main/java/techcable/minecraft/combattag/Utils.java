@@ -22,7 +22,6 @@ import org.bukkit.projectiles.ProjectileSource;
 import com.trc202.CombatTag.CombatTag;
 
 import techcable.minecraft.npclib.NPC;
-import techcable.minecraft.techutils.TechUtils;
 import techcable.minecraft.techutils.entity.TechPlayer;
 
 import lombok.*;
