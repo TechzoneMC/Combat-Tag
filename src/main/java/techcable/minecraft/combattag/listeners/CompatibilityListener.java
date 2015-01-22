@@ -2,9 +2,13 @@ package techcable.minecraft.combattag.listeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.entity.Player;
 
 import techcable.minecraft.combattag.event.CombatTagByPlayerEvent;
 import techcable.minecraft.combattag.event.CombatTagEvent;
+import techcable.minecraft.combattag.Utils;
+import techcable.minecraft.combattag.PluginCompatibility;
 
 public class CompatibilityListener implements Listener {
 	@EventHandler
