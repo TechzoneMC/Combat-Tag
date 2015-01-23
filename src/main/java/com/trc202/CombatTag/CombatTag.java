@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.StringUtil;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
@@ -391,5 +392,19 @@ public class CombatTag extends TechPlugin<CombatTagPlayer> {
     	manager.registerEvents(new CompatibilityListener(), this);
     	manager.registerEvents(new PlayerListener(), this);
     	manager.registerEvents(new SettingListener(), this);
+    }
+    
+    public void registerTasks() {
+        new NPCUpdateTask().runTaskTimer(this, 10, 5);
+    }
+    
+    public static class NPCUpdateTask extends BukkitRunnable {
+        @Override
+        public void run() {
+            List<CombatTagNPC> npcs = CombatTagNPC.getAllNpcs();
+            for (CombatTagNPC npc : npcs) {
+                npc.getNpc().update();
+            }
+        }
     }
 }
