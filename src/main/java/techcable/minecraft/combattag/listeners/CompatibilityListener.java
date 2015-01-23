@@ -4,6 +4,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
 
 import techcable.minecraft.combattag.event.CombatTagByPlayerEvent;
 import techcable.minecraft.combattag.event.CombatTagEvent;
@@ -20,16 +21,16 @@ public class CompatibilityListener implements Listener {
 		if (!event.getCTAttacker().isAuthenticated()) event.setCancelled(true);
 	}
 	@EventHandler(ignoreCancelled=true)
-     	public void onDamage(EntityDamageByEntityEvent event) {
-     		if ((event.getEntity() instanceof Player) && !event.getEntity().isAuthenticated()) {
-            		event.setCancelled(true);
-			return;
-        	}
-        	if ((Utils.getRootDamager(event.getDamager()) != null) && 
-        		(Utils.getRootDamager(event.getDamager()) instanceof Player) && 
-        		!PluginCompatibility.isAuthenticated((Player)Utils.getRootDamager(event.getDamager()))) {
-            		event.setCancelled(true);
-            		return;
-        	}
-     	}
+    public void onDamage(EntityDamageByEntityEvent event) {
+        Entity defender = event.getEntity();
+        Entity attacker = Utils.getRootDamager(event.getDamager());
+     	if (defender instanceof Player && !PluginCompatibility.isAuthenticated((Player)defender)) {
+        	event.setCancelled(true);
+		    return;
+        }
+        if (attacker != null && attacker instanceof Player && PluginCompatibility.isAuthenticated((Player)attacker)) {
+            event.setCancelled(true);
+            return;
+        }
+    }
 }
