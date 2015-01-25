@@ -29,6 +29,7 @@ public class SettingsLoader {
     private static final String blockFlying = "blockFlying";
     private static final String updateEnabled = "updateEnabled";
     private static final String stopCombatSafezoning = "stopCombatSafezoning";
+    private static final String disableDisguisesInCombat = "disableDisguisesInCombat";
     public Settings loadSettings(SettingsHelper helper, String version) {
         settings = new Settings();
         helper.loadConfig();
@@ -120,6 +121,9 @@ public class SettingsLoader {
         if (helper.getProperty(blockFlying) == null) {
             helper.setProperty(blockFlying, Boolean.toString(temp.blockFly()));
         }
+        if (helper.getProperty(disableDisguisesInCombat) == null) {
+            helper.setProperty(disableDisguisesInCombat, Boolean.toString(temp.isDisableDisguisesInCombat()));
+        }
     }
 
     private boolean isLatestVersion(SettingsHelper helper, String vers) {
@@ -155,7 +159,8 @@ public class SettingsLoader {
                 && (helper.getProperty(blockCreativeTagging) != null)
                 && (helper.getProperty(blockFlying) != null)
 	        && (helper.getProperty(updateEnabled) != null)
- 	        && (helper.getProperty(stopCombatSafezoning) != null);
+ 	        && (helper.getProperty(stopCombatSafezoning) != null)
+ 	        && (helper.getProperty(disableDisguisesInCombat) != null);
     }
 
     private void loadProperties(SettingsHelper helper) {
@@ -193,5 +198,6 @@ public class SettingsLoader {
         settings.setPlayerTag(Boolean.valueOf(helper.getProperty(playerTag)));
         settings.setBlockCreativeTagging(Boolean.valueOf(helper.getProperty(blockCreativeTagging)));
         settings.setBlockFly(Boolean.valueOf(helper.getProperty(blockFlying)));
+        settings.setDisableDisguisesInCombat(Boolean.valueOf(helper.getProperty(disableDisguisesInCombat)));
     }
 }

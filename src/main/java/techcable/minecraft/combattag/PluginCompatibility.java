@@ -1,5 +1,7 @@
 package techcable.minecraft.combattag;
 
+import me.libraryaddict.disguise.DisguiseAPI;
+
 import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -50,6 +52,16 @@ public class PluginCompatibility {
 	else return false;
     }
     
+    public static boolean isDisguised(Player player) {
+        if (!hasLibsDisguises()) return false;
+        return DisguiseAPI.isDisguised(player);
+    }
+    
+    public static void unDisguise(Player player) {
+        if (!hasLibsDisguises()) return;
+        DisguiseAPI.undisguiseToAll(player);
+    }
+    
     public static boolean hasFactions() {
     	return FactionsAPI.isFactionsInstalled();
     }
@@ -61,5 +73,14 @@ public class PluginCompatibility {
 			return false;
 		}
 		return true;
+	}
+	
+	public static boolean hasLibsDisguises() {
+	    try {
+	        Class.forName("me.libraryaddict.disguise.DisguiseAPI");
+	        return true;
+	    } catch (ClassNotFoundException ex) {
+	        return false;
+	    }
 	}
 }

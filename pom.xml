@@ -25,9 +25,13 @@
 		  <id>sk89q-repo</id>
 		  <url>http://maven.sk89q.com/repo/</url>
 		</repository>
-                <repository>
+        <repository>
 		  <id>techcable-repo</id>
 		  <url>http://repo.techcable.net/content/groups/public/</url>
+		</repository>
+		<repository>
+		    <id>md5-repo</id>
+		    <url>http://repo.md-5.net/content/groups/public/</url>
 		</repository>
 	</repositories>
 	<dependencies>
@@ -78,6 +82,13 @@
 		  <version>6.0.0-SNAPSHOT</version>
 		  <scope>provided</scope>
 		  <optional>true</optional>
+		</dependency>
+		<dependency>
+		    <groupId>LibsDisguises</groupId>
+		    <artifactId>LibsDisguises</artifactId>
+		    <version>8.2.6-SNAPSHOT</version>
+		    <scope>provided</scope>
+		    <optional>true</optional>
 		</dependency>
 	</dependencies>
 

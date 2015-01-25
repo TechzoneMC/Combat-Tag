@@ -81,6 +81,14 @@ public class CombatTagPlayer extends TechPlayer {
 	
 	
 	public boolean isAuthenticated() {
-		return PluginCompatibility.isAuthenticated(getPlayer().getPlayer()); 
+		return PluginCompatibility.isAuthenticated(getPlayer()); 
+	}
+	
+	public boolean isDisguised() {
+	    return PluginCompatibility.isDisguised(getPlayer());
+	}
+	
+	public void unDisguise() {
+	    PluginCompatibility.unDisguise(getPlayer());
 	}
 }

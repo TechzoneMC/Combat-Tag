@@ -32,8 +32,10 @@ public class Settings {
     private boolean blockCreativeTagging;
     private boolean blockFly;
     private boolean updateEnabled;
+    private boolean disableDisguisesInCombat;
 
     public Settings() {
+        disableDisguisesInCombat = true;
 	stopCombatSafezoning = true;
 	updateEnabled = true;
         instaKill = false;
@@ -254,7 +256,15 @@ public class Settings {
     public boolean blockFly() {
         return blockFly;
     }
-
+    
+    public boolean isDisableDisguisesInCombat() {
+        return disableDisguisesInCombat;
+    }
+    
+    public void setDisableDisguisesInCombat(boolean disableDisguisesInCombat) {
+        this.disableDisguisesInCombat = disableDisguisesInCombat;
+    }
+    
     public String translateColor(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
