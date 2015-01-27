@@ -1,4 +1,4 @@
- package techcable.minecraft.combattag.entity;
+package techcable.minecraft.combattag.entity;
 
 import java.util.ArrayList;
 import java.util.List;

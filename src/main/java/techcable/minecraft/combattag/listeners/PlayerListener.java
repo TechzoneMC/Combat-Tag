@@ -55,6 +55,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onDamage(EntityDamageByEntityEvent event) {
     	if (!(event.getEntity() instanceof Player)) return; //Not a player
+    	if (CombatTagAPI.isNPC(event.getEntity())) return;
     	CombatTagPlayer defender = getPlugin().getPlayer(((Player)event.getEntity()).getUniqueId());
     	LivingEntity attacker = Utils.getRootDamager(event.getDamager());
     	if (attacker == null) return;

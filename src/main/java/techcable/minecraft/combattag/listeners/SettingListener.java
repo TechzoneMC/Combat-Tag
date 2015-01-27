@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 import com.sk89q.worldguard.blacklist.event.BlockPlaceBlacklistEvent;
 import com.trc202.settings.Settings;
 
+import static techcable.minecraft.combattag.CombatTagAPI.isNPC;
 import techcable.minecraft.combattag.Utils;
 import techcable.minecraft.combattag.entity.CombatTagPlayer;
 import techcable.minecraft.combattag.event.CombatTagByPlayerEvent;
@@ -61,6 +62,7 @@ public class SettingListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
+	    if (isNPC(event.getPlayer())) return;
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
 		if (player.isTagged() && getSettings().isBlockEditWhileTagged()) {
 			event.setCancelled(true);
@@ -69,6 +71,7 @@ public class SettingListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
+	    if (isNPC(event.getPlayer())) return;
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
 		if (player.isTagged() && getSettings().isBlockEditWhileTagged()) {
 			event.setCancelled(true);
@@ -76,6 +79,7 @@ public class SettingListener implements Listener {
 	}
 	@EventHandler
 	public void onTeleport(PlayerTeleportEvent event) {
+	    if (isNPC(event.getPlayer())) return;
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
 		if (!player.isTagged()) return;
 		if (event.getCause().equals(TeleportCause.PLUGIN) || event.getCause().equals(TeleportCause.UNKNOWN) && getSettings().blockTeleport()) {
@@ -86,6 +90,7 @@ public class SettingListener implements Listener {
 	}
 	@EventHandler
 	public void onFly(PlayerToggleFlightEvent event) {
+	    if (isNPC(event.getPlayer())) return;
 		if (!getSettings().blockFly()) return;
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
 		if (player.isTagged()) event.setCancelled(true);
@@ -95,6 +100,7 @@ public class SettingListener implements Listener {
 	//Copied from old listeners
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) { 
+	    if (isNPC(event.getPlayer())) return;
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
 		if (player.isTagged()) {
 			String command = event.getMessage();
