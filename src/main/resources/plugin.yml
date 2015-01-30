@@ -1,7 +1,7 @@
 name: CombatTagReloaded
-version: 1.0.12
+version: 1.0.12-SNAPSHOT
 authors: [cheddar262, Techcable]
-softdepend: [Citizens, WorldGuard]
+softdepend: [Citizens, WorldGuard, Factions]
 main: com.trc202.CombatTag.CombatTag
 dev-url: http://dev.bukkit.org/server-mods/combat-tag
 commands:
