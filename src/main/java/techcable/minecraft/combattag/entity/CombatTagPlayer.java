@@ -12,8 +12,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.base.Preconditions;
 import com.trc202.CombatTag.CombatTag;
 
-import fr.xephi.authme.cache.auth.PlayerCache;
-
 import techcable.minecraft.combattag.CombatTagAPI;
 import techcable.minecraft.combattag.PluginCompatibility;
 import techcable.minecraft.combattag.Utils;
@@ -77,11 +75,6 @@ public class CombatTagPlayer extends TechPlayer {
 	public void createNPC() {
 		CombatTagNPC npc = CombatTagNPC.createNPC(getUuid());
 		this.npc = npc;
-	}
-	
-	
-	public boolean isAuthenticated() {
-		return PluginCompatibility.isAuthenticated(getPlayer()); 
 	}
 	
 	public boolean isDisguised() {

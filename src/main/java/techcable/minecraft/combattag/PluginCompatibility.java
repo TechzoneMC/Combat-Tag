@@ -14,18 +14,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import fr.xephi.authme.api.API;
-
 import lombok.*;
 
 @Getter
 public class PluginCompatibility {
 	private PluginCompatibility() {}
-	
-	public static boolean isAuthenticated(Player player) {
-		if (!hasAuthme()) return true;
-		return API.isAuthenticated(player);
-	}
     
     public static boolean isPvpDisabled(Location location) {
     	return !isWGPvPEnabled(location) || isSafezone(location);
@@ -65,15 +58,6 @@ public class PluginCompatibility {
     public static boolean hasFactions() {
     	return FactionsAPI.isFactionsInstalled();
     }
-    
-	public static boolean hasAuthme() {
-		try {
-			Class.forName("fr.xephi.authme.AuthMe");
-		} catch (ClassNotFoundException ex) {
-			return false;
-		}
-		return true;
-	}
 	
 	public static boolean hasLibsDisguises() {
 	    try {
