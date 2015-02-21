@@ -52,7 +52,7 @@ public class SettingListener implements Listener {
 	@EventHandler
 	public void onCombatTagByPlayer(CombatTagByPlayerEvent event) {
 		if (getSettings().blockCreativeTagging() && event.getAttacker().getGameMode().equals(GameMode.CREATIVE)) {
-			event.getPlayer().sendMessage("[CombatTag] You can't combat tag in creative mode");
+			event.getAttacker().sendMessage("[CombatTag] You can't combat tag in creative mode");
 			event.setCancelled(true);
 		}
 	}
