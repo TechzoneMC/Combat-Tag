@@ -52,6 +52,7 @@ public class SettingListener implements Listener {
 	@EventHandler
 	public void onCombatTagByPlayer(CombatTagByPlayerEvent event) {
 		if (getSettings().blockCreativeTagging() && event.getAttacker().getGameMode().equals(GameMode.CREATIVE)) {
+			event.getPlayer().sendMessage("[CombatTag] You can't combat tag in creative mode");
 			event.setCancelled(true);
 		}
 	}
@@ -64,7 +65,8 @@ public class SettingListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 	    if (isNPC(event.getPlayer())) return;
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
-		if (player.isTagged() && getSettings().isBlockEditWhileTagged()) {
+		if (player.isTagged() && !getSettings().isBlockEditWhileTagged()) {
+			event.getPlayer().sendMessage("[CombatTag] You can't break blocks in combat");
 			event.setCancelled(true);
 		}
 	}
@@ -73,7 +75,8 @@ public class SettingListener implements Listener {
 	public void onBlockBreak(BlockBreakEvent event) {
 	    if (isNPC(event.getPlayer())) return;
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
-		if (player.isTagged() && getSettings().isBlockEditWhileTagged()) {
+		if (player.isTagged() && !getSettings().isBlockEditWhileTagged()) {
+			event.getPlayer().sendMessage("[CombatTag] You can't break blocks in combat");
 			event.setCancelled(true);
 		}
 	}
@@ -83,8 +86,10 @@ public class SettingListener implements Listener {
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
 		if (!player.isTagged()) return;
 		if (event.getCause().equals(TeleportCause.PLUGIN) || event.getCause().equals(TeleportCause.UNKNOWN) && getSettings().blockTeleport()) {
+			event.getPlayer().sendMessage("[CombatTag] You can't teleport in combat");
 			event.setCancelled(true);
 		} else if (event.getCause().equals(TeleportCause.ENDER_PEARL) && getSettings().blockEnderPearl()) {
+			event.getPlayer().sendMessage("[CombatTag] You can't enderpearl in combat");
 			event.setCancelled(true);
 		}
 	}
@@ -93,7 +98,10 @@ public class SettingListener implements Listener {
 	    if (isNPC(event.getPlayer())) return;
 		if (!getSettings().blockFly()) return;
 		CombatTagPlayer player = CombatTagPlayer.getPlayer(event.getPlayer());
-		if (player.isTagged()) event.setCancelled(true);
+		if (player.isTagged()) {
+			event.getPlayer().sendMessage("[CombatTag] You can't fly in combat");
+			event.setCancelled(true);
+		}
 	}
 	
 	
