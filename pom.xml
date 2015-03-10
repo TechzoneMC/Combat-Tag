@@ -1,88 +1,80 @@
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-	    <groupId>net.techcable</groupId>
-	    <artifactId>parent</artifactId>
-	    <version>1.0.0-SNAPSHOT</version>
+		<groupId>net.techcable</groupId>
+		<artifactId>parent</artifactId>
+		<version>1.0.0</version>
 	</parent>
-	<groupId>techcable.minecraft</groupId>
-	<artifactId>CombatTag</artifactId>
-	<version>1.0.12-SNAPSHOT</version>
+	<artifactId>combattag</artifactId>
+	<version>1.0.13-SNAPSHOT</version>
 	<name>Combat Tag Reloaded</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<repositories>
 		<repository>
-		    <id>metrics-repo</id>
-		    <url>http://repo.mcstats.org/content/repositories/public</url>
+			<id>metrics-repo</id>
+			<url>http://repo.mcstats.org/content/repositories/public</url>
 		</repository>
 		<repository>
-		  <id>sk89q-repo</id>
-		  <url>http://maven.sk89q.com/repo/</url>
-		</repository>
-        <repository>
-		  <id>techcable-repo</id>
-		  <url>http://repo.techcable.net/content/groups/public/</url>
+			<id>sk89q-repo</id>
+			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
-		    <id>md5-repo</id>
-		    <url>http://repo.md-5.net/content/groups/public/</url>
+			<id>techcable-repo</id>
+			<url>http://repo.techcable.net/content/groups/public/</url>
+		</repository>
+		<repository>
+			<id>md5-repo</id>
+			<url>http://repo.md-5.net/content/groups/public/</url>
 		</repository>
 	</repositories>
 	<dependencies>
-	  <dependency>
-	    <groupId>net.gravitydevelopment.updater</groupId>
-	    <artifactId>updater</artifactId>
-	    <version>2.3</version>
-	  </dependency>
-	  <dependency>
-	    <groupId>com.sk89q</groupId>
-	    <artifactId>worldedit</artifactId>
-	    <version>5.6.3</version>
-	    <scope>provided</scope>
-	    <optional>true</optional>
-	  </dependency>
+		<dependency>
+			<groupId>net.gravitydevelopment.updater</groupId>
+			<artifactId>updater</artifactId>
+			<version>2.3</version>
+		</dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.8-R0.1-SNAPSHOT</version>
+			<version>1.7.9-R0.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.mcstats.bukkit</groupId>
-		    <artifactId>metrics</artifactId>
-		    <version>R7</version>
+			<groupId>org.mcstats.bukkit</groupId>
+			<artifactId>metrics</artifactId>
+			<version>R7</version>
 		</dependency>
 		<dependency>
-			<groupId>techcable.minecraft</groupId>
-			<artifactId>npclib-base</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
+			<groupId>net.techcable</groupId>
+			<artifactId>npclib</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.techcable.minecraft.techutils</groupId>
-			<artifactId>core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<groupId>net.techcable</groupId>
+			<artifactId>techutils</artifactId>
+			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-		  <groupId>com.sk89q</groupId>
-		  <artifactId>worldguard</artifactId>
-		  <version>6.0.0-SNAPSHOT</version>
-		  <scope>provided</scope>
-		  <optional>true</optional>
+			<groupId>LibsDisguises</groupId>
+			<artifactId>LibsDisguises</artifactId>
+			<version>8.2.6-SNAPSHOT</version>
+			<scope>provided</scope>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
-		    <groupId>LibsDisguises</groupId>
-		    <artifactId>LibsDisguises</artifactId>
-		    <version>8.2.6-SNAPSHOT</version>
-		    <scope>provided</scope>
-		    <optional>true</optional>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldguard</artifactId>
+			<version>6.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
-	  <finalName>CombatTag</finalName>
+		<finalName>CombatTag</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -97,24 +89,24 @@
 						<configuration>
 							<relocations>
 								<relocation>
-									<pattern>techcable.minecaft.techutils</pattern>
-									<shadedPattern>techcable.minecraft.combattag.libs.techcable.minecraft.techutils</shadedPattern>
+									<pattern>net.techcable.techutils</pattern>
+									<shadedPattern>net.techcable.combattag.libs.techutils</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>org.mcstats</pattern>
-									<shadedPattern>techcable.minecraft.combattag.libs.org.mcstats</shadedPattern>
+									<shadedPattern>net.techcable.combattag.libs.mcstats</shadedPattern>
 								</relocation>
 								<relocation>
-								  <pattern>net.gravitydevelopment.updater</pattern>
-								  <shadedPattern>techcable.minecraft.libs.net.gravitydevelopment.updater</shadedPattern>
+									<pattern>net.gravitydevelopment.updater</pattern>
+									<shadedPattern>net.techcable.combattag.libs.updater</shadedPattern>
 								</relocation>
 								<relocation>
-									<pattern>techcable.minecraft.npclib</pattern>
-									<shadedPattern>techcable.minecraft.combattag.libs.techcable.minecraft.npclib</shadedPattern>
+									<pattern>net.techcable.npclib</pattern>
+									<shadedPattern>net.techcable.combattag.libs.npclib</shadedPattern>
 								</relocation>
 								<relocation>
 									<pattern>techcable.minecraft.factionsapi</pattern>
-									<shadedPattern>techcable.minecraft.combattag.libs.techcable.minecraft.factionsapi</shadedPattern>
+									<shadedPattern>net.techcable.combattag.libs.factionsapi</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>

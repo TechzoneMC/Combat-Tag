@@ -1,25 +1,25 @@
 package com.trc202.CombatTagApi;
 
+import net.techcable.combattag.CombatTagAPI;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-
-import com.trc202.CombatTag.CombatTag;
-
-import techcable.minecraft.combattag.CombatTagAPI;
-import techcable.minecraft.combattag.entity.CombatTagNPC;
+import org.omg.CosNaming.IstringHelper;
 
 /**
- * @deprecated see techcable.minecraft.combattag CombatTagAPI
+ * @deprecated use techcable.minecraft.combattag CombatTagAPI
  */
 @Deprecated
 public class CombatTagApi {
-
-    private final CombatTag plugin;
-
-    public CombatTagApi(CombatTag plugin) {
-        this.plugin = plugin;
-    }
+	
+	/**
+	 * 
+	 * @deprecated use no-args construcor
+	 * @param plugin ignored
+	 */
+	@Deprecated
+    public CombatTagApi(Object plugin) {}
 
     /**
      * Checks to see if the player is in combat. The combat time can be
@@ -31,7 +31,7 @@ public class CombatTagApi {
      */
     @Deprecated
     public boolean isInCombat(Player player) {
-        return plugin.isInCombat(player.getUniqueId());
+        return CombatTagAPI.isTagged(player.getUniqueId());
     }
 
     /**
@@ -47,7 +47,7 @@ public class CombatTagApi {
     public boolean isInCombat(String name) {
         Player player = Bukkit.getPlayerExact(name);
         if (player != null) {
-            return plugin.isInCombat(player.getUniqueId());
+            return CombatTagAPI.isTagged(player);
         }
         return false;
     }
@@ -62,8 +62,8 @@ public class CombatTagApi {
     
     @Deprecated
     public long getRemainingTagTime(Player player) {
-        if (plugin.isInCombat(player.getUniqueId())) {
-            return plugin.getRemainingTagTime(player.getUniqueId());
+        if (isInCombat(player)) {
+            return CombatTagAPI.getRemainingTagTime(player);
         } else {
             return -1L;
         }
@@ -81,11 +81,7 @@ public class CombatTagApi {
     public long getRemainingTagTime(String name) {
         if (Bukkit.getPlayerExact(name) != null) {
             Player player = Bukkit.getPlayerExact(name);
-            if (plugin.isInCombat(player.getUniqueId())) {
-                return plugin.getRemainingTagTime(player.getUniqueId());
-            } else {
-                return -1L;
-            }
+            return getRemainingTagTime(player);
         }
         return -2L;
     }
@@ -109,7 +105,9 @@ public class CombatTagApi {
      */
     @Deprecated
     public boolean tagPlayer(Player player) {
-        return plugin.addTagged(player);
+        if (isInCombat(player)) return false;
+    	CombatTagAPI.addTagged(player);
+    	return true;
     }
 
     /**
@@ -119,7 +117,7 @@ public class CombatTagApi {
      */
     @Deprecated
     public void untagPlayer(Player player) {
-        plugin.removeTagged(player.getUniqueId());
+        CombatTagAPI.removeTagged(player);
     }
 
     /**
@@ -130,6 +128,6 @@ public class CombatTagApi {
      */
     @Deprecated
     public String getConfigOption(String configKey) {
-        return plugin.getSettingsHelper().getProperty(configKey);
+        return CombatTagAPI.getPlugin().getSettingsHelper().getProperty(configKey);
     }
 }

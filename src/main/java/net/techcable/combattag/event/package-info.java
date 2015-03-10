@@ -5,4 +5,4 @@
  * @author Nicholas Schlabach
  *
  */
-package techcable.minecraft.combattag.event;
+package net.techcable.combattag.event;

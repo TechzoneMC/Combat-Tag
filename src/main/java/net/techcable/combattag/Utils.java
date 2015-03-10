@@ -1,10 +1,9 @@
-package techcable.minecraft.combattag;
+package net.techcable.combattag;
 
 import java.util.logging.Logger;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.HumanEntity;
@@ -13,16 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Tameable;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
-
-import com.trc202.CombatTag.CombatTag;
-
-import techcable.minecraft.npclib.NPC;
-import techcable.minecraft.techutils.entity.TechPlayer;
 
 import lombok.*;
 
@@ -38,7 +31,7 @@ public class Utils {
         }
     }
     public static boolean isDebug() {
-    	return getPlugin().isDebugEnabled();
+    	return getPlugin().getSettings().isDebugEnabled();
     }
     public static Logger getLogger() {
     	return Bukkit.getLogger();
