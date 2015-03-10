@@ -1,6 +1,6 @@
 package com.trc202.CombatTagApi;
 
-import net.techcable.combattag.CombatTagAPI;
+import techcable.minecraft.combattag.CombatTagAPI;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;

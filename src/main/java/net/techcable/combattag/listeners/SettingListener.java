@@ -19,9 +19,9 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 import com.trc202.settings.Settings;
 
-import static net.techcable.combattag.CombatTagAPI.isNPC;
+import static techcable.minecraft.combattag.CombatTagAPI.isNPC;
 import lombok.*;
-import net.techcable.combattag.CombatTagAPI;
+import techcable.minecraft.combattag.CombatTagAPI;
 
 public class SettingListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -1,4 +1,4 @@
-package net.techcable.combattag;
+package techcable.minecraft.combattag;
 
 import java.util.UUID;
 
@@ -7,6 +7,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import lombok.*;
+import net.techcable.combattag.CombatPlayer;
+import net.techcable.combattag.CombatTag;
+import net.techcable.combattag.NPCManager;
+import net.techcable.combattag.Utils;
 
 /**
  * API to Interface with Combat Tag Reloaded

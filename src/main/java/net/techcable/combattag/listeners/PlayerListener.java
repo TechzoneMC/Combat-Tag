@@ -6,7 +6,7 @@ import java.util.UUID;
 import javax.persistence.EntityListeners;
 
 import net.techcable.combattag.CombatPlayer;
-import net.techcable.combattag.CombatTagAPI;
+import techcable.minecraft.combattag.CombatTagAPI;
 import net.techcable.combattag.PluginCompatibility;
 import net.techcable.combattag.Utils;
 import net.techcable.combattag.event.CombatLogEvent;
