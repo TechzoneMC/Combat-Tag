@@ -13,6 +13,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<repositories>
+                <repository>
+                        <id>techcable-repo</id>
+                        <url>http://repo.techcable.net/content/groups/public/</url>
+                </repository>
 		<repository>
 			<id>metrics-repo</id>
 			<url>http://repo.mcstats.org/content/repositories/public</url>
@@ -20,10 +24,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 		<repository>
 			<id>sk89q-repo</id>
 			<url>http://maven.sk89q.com/repo/</url>
-		</repository>
-		<repository>
-			<id>techcable-repo</id>
-			<url>http://repo.techcable.net/content/groups/public/</url>
 		</repository>
 		<repository>
 			<id>md5-repo</id>

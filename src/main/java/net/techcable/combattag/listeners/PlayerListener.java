@@ -32,22 +32,7 @@ import com.google.common.collect.Sets;
 import static net.techcable.combattag.Utils.getPlugin;
 
 public class PlayerListener implements Listener {
-    public static final double KNOCKBACK_POWER = 1.5;
-    
-    @EventHandler
-    public void onMove(PlayerMoveEvent event) {
-        if (!Utils.getPlugin().getSettings().isStopCombatSafezoning()) return;
-        if (event.getPlayer().hasPermission("combattag.safezone.ignore"));
-        if (!CombatPlayer.getPlayer(event.getPlayer()).isTagged()) return;
-        if (PluginCompatibility.isPvpDisabled(event.getTo())) {
-            knockback(event.getPlayer());
-            event.getPlayer().sendMessage("[CombatTag] You can't enter a safezone while combat tagged");
-        }
-    }
-    
-    public static void knockback(Player player) {
-    	player.setVelocity(player.getVelocity().multiply(-KNOCKBACK_POWER).setY(2));
-    }
+
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onDamage(EntityDamageByEntityEvent event) {
     	LivingEntity attacker = Utils.getRootDamager(event.getDamager());
