@@ -12,18 +12,26 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Preconditions;
 
+import net.techcable.combattag.forcefield.ForceField;
 import net.techcable.npclib.NPC;
 import net.techcable.npclib.NPCRegistry;
 import net.techcable.techutils.entity.TechPlayer;
+
 import lombok.*;
 
 public class CombatPlayer extends TechPlayer {
 	private long tagTime = -1;
-	
+	private ForceField forceField;
+
 	public CombatPlayer(UUID player, CombatTag plugin) {
 		super(player, plugin);
 	}
-	
+
+	public ForceField getForceField() {
+		if (forceField != null) forceField = new ForceField(getEntity(), getPlugin());
+		return forceField;
+	}
+
 	public CombatTag getPlugin() {
 	    return (CombatTag) super.getPlugin();
 	}

@@ -123,11 +123,12 @@ public class CombatTagApi {
     /**
      * Returns the value of a configuration option with the specified name
      *
+     * @deprecated we use a new config
      * @param configKey
      * @return String value of option
      */
     @Deprecated
     public String getConfigOption(String configKey) {
-        return CombatTagAPI.getPlugin().getSettingsHelper().getProperty(configKey);
+        throw new UnsupportedOperationException();
     }
 }

@@ -31,7 +31,7 @@ public class Utils {
         }
     }
     public static boolean isDebug() {
-    	return getPlugin().getConfig().isDebugEnabled();
+    	return getPlugin().getSettings().isDebugEnabled();
     }
     public static Logger getLogger() {
     	return Bukkit.getLogger();

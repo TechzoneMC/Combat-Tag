@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import lombok.core.Main;
 import net.techcable.combattag.config.MainConfig;
 import net.techcable.combattag.config.MessageConfig;
 import net.techcable.techutils.yamler.InvalidConfigurationException;
@@ -18,8 +17,6 @@ import com.trc202.settings.Settings;
 import com.trc202.settings.SettingsHelper;
 import com.trc202.settings.SettingsLoader;
 
-import net.gravitydevelopment.updater.Updater;
-import net.gravitydevelopment.updater.Updater.UpdateType;
 import net.techcable.combattag.listeners.CompatibilityListener;
 import net.techcable.combattag.listeners.InstakillListener;
 import net.techcable.combattag.listeners.NPCListener;
@@ -30,8 +27,6 @@ import net.techcable.npclib.NPCLib;
 import net.techcable.techutils.TechPlugin;
 import lombok.*;
 
-import static net.techcable.combattag.Utils.*;
-
 @Getter
 public class CombatTag extends TechPlugin<CombatPlayer> {
         public CombatTag() {
@@ -40,7 +35,7 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
             this.oldSettingsFile = new File(combatTagDir, "settings.prop");
         }
         
-	private MainConfig config;
+	private MainConfig settings;
     private MessageConfig messages;
 	private final File oldSettingsFile;
 	private NPCManager npcManager;
@@ -53,8 +48,8 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
 	@Override
 	protected void startup() {
         try {
-            MainConfig config = new MainConfig();
-            MessageConfig messages = new MessageConfig();
+            MainConfig config = new MainConfig(this);
+            MessageConfig messages = new MessageConfig(this);
             if (oldSettingsFile.exists()) {
                 info("Migrating Configuration");
                 Settings oldSettings = new SettingsLoader().loadSettings(new SettingsHelper(oldSettingsFile, getName()), getDescription().getVersion());
@@ -69,7 +64,7 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
                 if (messages.getFile().exists()) messages.load();
                 else messages.save();
             }
-            this.config = config;
+            this.settings = config;
             this.messages = messages;
         } catch (InvalidConfigurationException ex) {
             severe("Invalid Configuration: " + ex.getMessage());
@@ -80,7 +75,7 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
 		initMetrics();
 		tryUpdatePlugin();
 		registerListeners();
-        if (!getConfig().isInstaKill()) {
+        if (!getSettings().isInstaKill()) {
             if (!NPCLib.isSupported() ){
                 severe("NPCs are enabled but this version of minecraft isn't supported");
                 severe("Please install citizens or update CombatTag if you want to use npcs");
@@ -115,7 +110,7 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
 
                 @Override
                 public int getValue() {
-                    if (getConfig().isInstaKill()) {
+                    if (getSettings().isInstaKill()) {
                         return 1;
                     } else {
                         return 0;
@@ -126,7 +121,7 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
             punishment.addPlotter(new Plotter("NPC") {
                 @Override
                 public int getValue() {
-                    if (!getConfig().isInstaKill()) {
+                    if (!getSettings().isInstaKill()) {
                         return 1;
                     } else {
                         return 0;
@@ -143,13 +138,13 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
     private static final int projectId = 86389;
 
     public void tryUpdatePlugin() {
-        if (getConfig().isUpdateEnabled()) {
+        if (getSettings().isUpdateEnabled()) {
 			// Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true); -- Updating is broken
         }
     }
     public void registerListeners() {
     	PluginManager manager = Bukkit.getPluginManager();
-    	if (getConfig().isInstaKill()) {
+    	if (getSettings().isInstaKill()) {
     		manager.registerEvents(new InstakillListener(), this);
     	} else {
     		manager.registerEvents(new NPCListener(), this);

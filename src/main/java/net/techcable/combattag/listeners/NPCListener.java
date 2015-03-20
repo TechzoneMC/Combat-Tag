@@ -3,6 +3,7 @@ package net.techcable.combattag.listeners;
 import net.techcable.combattag.CombatPlayer;
 import net.techcable.combattag.NPCManager;
 import net.techcable.combattag.Utils;
+import net.techcable.combattag.config.MainConfig;
 import net.techcable.combattag.event.CombatLogEvent;
 import net.techcable.npclib.NPC;
 import net.techcable.techutils.inventory.InventoryUtils;
@@ -40,7 +41,7 @@ public class NPCListener implements Listener {
 		NPCManager.syncInventory(npc);
 	}
 	
-	public static Settings getSettings() {
+	public static MainConfig getSettings() {
 		return Utils.getPlugin().getSettings();
 	}
 }

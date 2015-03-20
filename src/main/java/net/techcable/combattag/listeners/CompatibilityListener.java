@@ -18,6 +18,6 @@ public class CompatibilityListener implements Listener {
 	}
     
     public MainConfig getSettings() {
-        return Utils.getPlugin().getConfig();
+        return Utils.getPlugin().getSettings();
     }
 }
