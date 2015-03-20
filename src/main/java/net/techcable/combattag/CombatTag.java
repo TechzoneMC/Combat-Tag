@@ -1,11 +1,13 @@
 package net.techcable.combattag;
 
-import static net.techcable.combattag.Utils.severe;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import lombok.core.Main;
+import net.techcable.combattag.config.MainConfig;
+import net.techcable.combattag.config.MessageConfig;
+import net.techcable.techutils.yamler.InvalidConfigurationException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.mcstats.Metrics;
@@ -28,10 +30,19 @@ import net.techcable.npclib.NPCLib;
 import net.techcable.techutils.TechPlugin;
 import lombok.*;
 
+import static net.techcable.combattag.Utils.*;
+
 @Getter
 public class CombatTag extends TechPlugin<CombatPlayer> {
-	private Settings settings;
-	private final SettingsHelper settingsHelper = new SettingsHelper(new File(getDataFolder().getParent() + File.pathSeparator + "CombatTag" + File.pathSeparator + "settings.prop"), getName());
+        public CombatTag() {
+            File combatTagDir = new File(getDataFolder().getParent(), "CombatTag");
+            combatTagDir.mkdirs();
+            this.oldSettingsFile = new File(combatTagDir, "settings.prop");
+        }
+        
+	private MainConfig config;
+    private MessageConfig messages;
+	private final File oldSettingsFile;
 	private NPCManager npcManager;
 	
 	@Override
@@ -41,14 +52,38 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
 
 	@Override
 	protected void startup() {
-		this.settings = new SettingsLoader().loadSettings(getSettingsHelper(), getDescription().getVersion());
+        try {
+            MainConfig config = new MainConfig();
+            MessageConfig messages = new MessageConfig();
+            if (oldSettingsFile.exists()) {
+                info("Migrating Configuration");
+                Settings oldSettings = new SettingsLoader().loadSettings(new SettingsHelper(oldSettingsFile, getName()), getDescription().getVersion());
+                config.migrateFrom(oldSettings);
+                messages.migrateFrom(oldSettings);
+                messages.save();
+                config.save();
+                oldSettingsFile.delete();
+            } else {
+                if (config.getFile().exists()) config.load();
+                else config.save();
+                if (messages.getFile().exists()) messages.load();
+                else messages.save();
+            }
+            this.config = config;
+            this.messages = messages;
+        } catch (InvalidConfigurationException ex) {
+            severe("Invalid Configuration: " + ex.getMessage());
+            severe("Shutting down");
+            setEnabled(false);
+            return;
+        }
 		initMetrics();
 		tryUpdatePlugin();
 		registerListeners();
-        if (!getSettings().isInstaKill()) {
+        if (!getConfig().isInstaKill()) {
             if (!NPCLib.isSupported() ){
                 severe("NPCs are enabled but this version of minecraft isn't supported");
-                severe("[CombatTag] Please install citizens or update CombatTag if you want to use npcs");
+                severe("Please install citizens or update CombatTag if you want to use npcs");
                 setEnabled(false);
                 return;
             } else {
@@ -80,7 +115,7 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
 
                 @Override
                 public int getValue() {
-                    if (settings.isInstaKill()) {
+                    if (getConfig().isInstaKill()) {
                         return 1;
                     } else {
                         return 0;
@@ -91,7 +126,7 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
             punishment.addPlotter(new Plotter("NPC") {
                 @Override
                 public int getValue() {
-                    if (!settings.isInstaKill()) {
+                    if (!getConfig().isInstaKill()) {
                         return 1;
                     } else {
                         return 0;
@@ -108,14 +143,13 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
     private static final int projectId = 86389;
 
     public void tryUpdatePlugin() {
-        if (getSettings().isUpdateEnabled()) {
-            @SuppressWarnings("unused")
-			Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true);
+        if (getConfig().isUpdateEnabled()) {
+			// Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true); -- Updating is broken
         }
     }
     public void registerListeners() {
     	PluginManager manager = Bukkit.getPluginManager();
-    	if (settings.isInstaKill()) {
+    	if (getConfig().isInstaKill()) {
     		manager.registerEvents(new InstakillListener(), this);
     	} else {
     		manager.registerEvents(new NPCListener(), this);

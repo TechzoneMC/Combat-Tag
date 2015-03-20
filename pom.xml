@@ -47,6 +47,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 			<artifactId>metrics</artifactId>
 			<version>R7</version>
 		</dependency>
+                <dependency>
+                    <groupId>com.comphenix.protocol</groupId>
+                    <artifactId>ProtocolLib</artifactId>
+                    <version>3.6.3-SNAPSHOT</version>
+                    <scope>provided</scope>
+                </dependency>
 		<dependency>
 			<groupId>net.techcable</groupId>
 			<artifactId>npclib</artifactId>

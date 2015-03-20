@@ -37,7 +37,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if (!Utils.getPlugin().getSettings().isStopCombatSafezoning()) return;
-        if (event.getPlayer().hasPermission("combattag.safezone.ignore"));
+        if (event.getPlayer().hasPermission("combattag.safezonce.ignore")) return;
         if (!CombatPlayer.getPlayer(event.getPlayer()).isTagged()) return;
         if (PluginCompatibility.isPvpDisabled(event.getTo())) {
             knockback(event.getPlayer());
@@ -46,7 +46,7 @@ public class PlayerListener implements Listener {
     }
     
     public static void knockback(Player player) {
-    	player.setVelocity(player.getVelocity().multiply(-KNOCKBACK_POWER).setY(2));
+    	player.setVelocity(player.getVelocity().multiply(-KNOCKBACK_POWER).setY(0.5));
     }
     @EventHandler(priority=EventPriority.MONITOR, ignoreCancelled=true)
     public void onDamage(EntityDamageByEntityEvent event) {
@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
     }
     
     public void onAttack(CombatPlayer attacker, LivingEntity defender) {
-    	if (!(defender instanceof Player) && !Utils.getPlugin().getSettings().mobTag()) return;
+    	if (!(defender instanceof Player) && !Utils.getPlugin().getSettings().isMobTag()) return;
     	if (attacker.isTagged()) return;
     	CombatTagEvent event = new CombatTagEvent(attacker, defender, TagCause.ATTACK);
     	Utils.fire(event);
@@ -67,7 +67,7 @@ public class PlayerListener implements Listener {
     }
     
     public void onDefend(CombatPlayer defender, LivingEntity attacker) {
-    	if (!(attacker instanceof Player) && !Utils.getPlugin().getSettings().mobTag()) return;
+    	if (!(attacker instanceof Player) && !Utils.getPlugin().getSettings().isMobTag()) return;
     	if (defender.isTagged()) return;
     	CombatTagEvent event = new CombatTagEvent(defender, attacker, TagCause.DEFEND);
     	Utils.fire(event);

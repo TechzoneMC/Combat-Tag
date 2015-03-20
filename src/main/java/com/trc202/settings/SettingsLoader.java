@@ -1,5 +1,7 @@
 package com.trc202.settings;
 
+import com.google.common.collect.Lists;
+
 public class SettingsLoader {
 
     Settings settings;
@@ -83,7 +85,7 @@ public class SettingsLoader {
             helper.setProperty(npcDieAfterTime, Boolean.toString(temp.isInstaKill()));
         }
         if (helper.getProperty(droptagonkick) == null) {
-            helper.setProperty(droptagonkick, Boolean.toString(temp.dropTagOnKick()));
+            helper.setProperty(droptagonkick, Boolean.toString(temp.isDropTagOnKick()));
         }
         if (helper.getProperty(tagMessageDamager) == null) {
             helper.setProperty(tagMessageDamager, temp.getTagMessageDamager());
@@ -98,28 +100,28 @@ public class SettingsLoader {
             helper.setProperty(commandMessageNotTagged, temp.getCommandMessageNotTagged());
         }
         if (helper.getProperty(blockTeleport) == null) {
-            helper.setProperty(blockTeleport, Boolean.toString(temp.blockTeleport()));
+            helper.setProperty(blockTeleport, Boolean.toString(temp.isBlockTeleport()));
         }
         if (helper.getProperty(blockEnderPearl) == null) {
-            helper.setProperty(blockEnderPearl, Boolean.toString(temp.blockEnderPearl()));
+            helper.setProperty(blockEnderPearl, Boolean.toString(temp.isBlockEnderPearl()));
         }
         if (helper.getProperty(dontSpawnInWG) == null) {
-            helper.setProperty(dontSpawnInWG, Boolean.toString(temp.dontSpawnInWG()));
+            helper.setProperty(dontSpawnInWG, Boolean.toString(temp.isDontSpawnInWG()));
         }
         if (helper.getProperty(onlyDamagerTagged) == null) {
-            helper.setProperty(onlyDamagerTagged, Boolean.toString(temp.onlyDamagerTagged()));
+            helper.setProperty(onlyDamagerTagged, Boolean.toString(temp.isOnlyDamagerTagged()));
         }
         if (helper.getProperty(mobTag) == null) {
-            helper.setProperty(mobTag, Boolean.toString(temp.mobTag()));
+            helper.setProperty(mobTag, Boolean.toString(temp.isMobTag()));
         }
         if (helper.getProperty(playerTag) == null) {
-            helper.setProperty(playerTag, Boolean.toString(temp.playerTag()));
+            helper.setProperty(playerTag, Boolean.toString(temp.isPlayerTag()));
         }
         if (helper.getProperty(blockCreativeTagging) == null) {
-            helper.setProperty(blockCreativeTagging, Boolean.toString(temp.blockCreativeTagging()));
+            helper.setProperty(blockCreativeTagging, Boolean.toString(temp.isBlockCreativeTagging()));
         }
         if (helper.getProperty(blockFlying) == null) {
-            helper.setProperty(blockFlying, Boolean.toString(temp.blockFly()));
+            helper.setProperty(blockFlying, Boolean.toString(temp.isBlockFly()));
         }
         if (helper.getProperty(disableDisguisesInCombat) == null) {
             helper.setProperty(disableDisguisesInCombat, Boolean.toString(temp.isDisableDisguisesInCombat()));
@@ -178,14 +180,14 @@ public class SettingsLoader {
         disabledCommandsString = disabledCommandsString.replace("]", "");
         String disabledCmds[] = disabledCommandsString.split(",");
         if (disabledCmds.length == 1 && disabledCmds[0].equals("")) {
-            settings.setDisabledCommands(new String[0]);
+            settings.setDisabledCommands(Lists.<String>newArrayList());
         } else {
-            settings.setDisabledCommands(disabledCmds);
+            settings.setDisabledCommands(Lists.newArrayList(disabledCmds));
         }
         String disabledWorldsString = helper.getProperty(disabledWorlds).replace("[", "");
         disabledWorldsString = disabledWorldsString.replace("]", "");
-        settings.setDisallowedWorlds(disabledWorldsString.split(","));
-        settings.setDropTagonKick(Boolean.valueOf(helper.getProperty(droptagonkick)));
+        settings.setDisallowedWorlds(Lists.newArrayList(disabledWorldsString.split(",")));
+        settings.setDropTagOnKick(Boolean.valueOf(helper.getProperty(droptagonkick)));
         settings.setTagMessageDamager(helper.getProperty(tagMessageDamager));
         settings.setTagMessageDamaged(helper.getProperty(tagMessageDamaged));
         settings.setCommandMessageTagged(helper.getProperty(commandMessageTagged));
@@ -193,7 +195,7 @@ public class SettingsLoader {
         settings.setBlockTeleport(Boolean.valueOf(helper.getProperty(blockTeleport)));
         settings.setBlockEnderPearl(Boolean.valueOf(helper.getProperty(blockEnderPearl)));
         settings.setDontSpawnInWG(Boolean.valueOf(helper.getProperty(dontSpawnInWG)));
-        settings.setOnlyDamager(Boolean.valueOf(helper.getProperty(onlyDamagerTagged)));
+        settings.setOnlyDamagerTagged(Boolean.valueOf(helper.getProperty(onlyDamagerTagged)));
         settings.setMobTag(Boolean.valueOf(helper.getProperty(mobTag)));
         settings.setPlayerTag(Boolean.valueOf(helper.getProperty(playerTag)));
         settings.setBlockCreativeTagging(Boolean.valueOf(helper.getProperty(blockCreativeTagging)));

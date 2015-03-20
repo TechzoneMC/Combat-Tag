@@ -1,12 +1,14 @@
 package net.techcable.combattag.listeners;
 
+import com.trc202.settings.Settings;
+import lombok.*;
 import net.techcable.combattag.CombatPlayer;
 import net.techcable.combattag.Utils;
 import net.techcable.combattag.event.CombatTagEvent;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,12 +18,8 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
-
-import com.trc202.settings.Settings;
-
-import static techcable.minecraft.combattag.CombatTagAPI.isNPC;
-import lombok.*;
 import techcable.minecraft.combattag.CombatTagAPI;
+import static techcable.minecraft.combattag.CombatTagAPI.isNPC;
 
 public class SettingListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -37,16 +35,16 @@ public class SettingListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onCombatTag(CombatTagEvent event) {
-		if (getSettings().onlyDamagerTagged() && event.isBecauseOfDefend()) {
+		if (getSettings().isOnlyDamagerTagged() && event.isBecauseOfDefend()) {
 			event.setCancelled(true);
 		}
-		if (ArrayUtils.contains(getSettings().getDisallowedWorlds(), event.getPlayer().getEntity().getLocation().getWorld())) {
+		if (isDisabledWorld(event.getPlayer().getEntity().getLocation().getWorld())) {
 			event.setCancelled(true); // Block combat tag in disabled worlds
 		}
 	}
 	@EventHandler
 	public void onCombatTagByPlayer(CombatTagEvent event) {
-            if (getSettings().blockCreativeTagging() && event.getPlayer().getEntity().getGameMode().equals(GameMode.CREATIVE) && event.isBecauseOfAttack()) {
+            if (getSettings().isBlockCreativeTagging() && event.getPlayer().getEntity().getGameMode().equals(GameMode.CREATIVE) && event.isBecauseOfAttack()) {
                 event.getPlayer().getEntity().sendMessage("[CombatTag] You can't combat tag in creative mode");
                 event.setCancelled(true);
             }
@@ -79,10 +77,10 @@ public class SettingListener implements Listener {
 	    if (isNPC(event.getPlayer())) return;
 		CombatPlayer player = CombatPlayer.getPlayer(event.getPlayer());
 		if (!player.isTagged()) return;
-		if (event.getCause().equals(TeleportCause.PLUGIN) || event.getCause().equals(TeleportCause.UNKNOWN) && getSettings().blockTeleport()) {
+		if (event.getCause().equals(TeleportCause.PLUGIN) || event.getCause().equals(TeleportCause.UNKNOWN) && getSettings().isBlockTeleport()) {
 			event.getPlayer().sendMessage("[CombatTag] You can't teleport in combat");
 			event.setCancelled(true);
-		} else if (event.getCause().equals(TeleportCause.ENDER_PEARL) && getSettings().blockEnderPearl()) {
+		} else if (event.getCause().equals(TeleportCause.ENDER_PEARL) && getSettings().isBlockEnderPearl()) {
 			event.getPlayer().sendMessage("[CombatTag] You can't enderpearl in combat");
 			event.setCancelled(true);
 		}
@@ -90,7 +88,7 @@ public class SettingListener implements Listener {
 	@EventHandler
 	public void onFly(PlayerToggleFlightEvent event) {
 	    if (isNPC(event.getPlayer())) return;
-		if (!getSettings().blockFly()) return;
+		if (!getSettings().isBlockFly()) return;
 		if (CombatTagAPI.isTagged(event.getPlayer())) {
 			event.getPlayer().sendMessage("[CombatTag] You can't fly in combat");
 			event.setCancelled(true);
@@ -134,4 +132,11 @@ public class SettingListener implements Listener {
 			}
 		}
 	}
+        
+    private boolean isDisabledWorld(World world) {
+        for (String wName : getSettings().getDisallowedWorlds()) {
+            if (wName.equalsIgnoreCase(world.getName())) return true;
+        }
+        return false;
+    }
 }

@@ -1,9 +1,8 @@
 package net.techcable.combattag.listeners;
 
-import com.trc202.settings.Settings;
-
 import net.techcable.combattag.PluginCompatibility;
 import net.techcable.combattag.Utils;
+import net.techcable.combattag.config.MainConfig;
 import net.techcable.combattag.event.CombatTagEvent;
 
 import org.bukkit.event.EventHandler;
@@ -18,7 +17,7 @@ public class CompatibilityListener implements Listener {
 		if (event.getPlayer().isDisguised() && getSettings().isDisableDisguisesInCombat()) event.getPlayer().unDisguise();
 	}
     
-    public Settings getSettings() {
-        return Utils.getPlugin().getSettings();
+    public MainConfig getSettings() {
+        return Utils.getPlugin().getConfig();
     }
 }
