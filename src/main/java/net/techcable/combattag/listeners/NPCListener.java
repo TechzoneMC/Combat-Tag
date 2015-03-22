@@ -6,7 +6,6 @@ import net.techcable.combattag.Utils;
 import net.techcable.combattag.config.MainConfig;
 import net.techcable.combattag.event.CombatLogEvent;
 import net.techcable.npclib.NPC;
-import net.techcable.techutils.inventory.InventoryUtils;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

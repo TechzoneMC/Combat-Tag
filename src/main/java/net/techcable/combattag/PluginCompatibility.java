@@ -23,6 +23,10 @@ public class PluginCompatibility {
     public static boolean isWGPvPEnabled(Location location) {
     	return WGBukkit.getRegionManager(location.getWorld()).getApplicableRegions(location).allows(DefaultFlag.PVP);
 	}
+
+    public static boolean hasWorldGuard() {
+        return Bukkit.getPluginManager().isPluginEnabled("WorldGuard");
+    }
     
     public static boolean isDisguised(Player player) {
         if (!hasLibsDisguises()) return false;

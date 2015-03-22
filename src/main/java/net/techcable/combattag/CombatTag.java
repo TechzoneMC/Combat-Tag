@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import net.techcable.combattag.config.MainConfig;
 import net.techcable.combattag.config.MessageConfig;
+import net.techcable.combattag.forcefield.ForceFieldListener;
 import net.techcable.techutils.yamler.InvalidConfigurationException;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -29,11 +30,11 @@ import lombok.*;
 
 @Getter
 public class CombatTag extends TechPlugin<CombatPlayer> {
-        public CombatTag() {
-            File combatTagDir = new File(getDataFolder().getParent(), "CombatTag");
-            combatTagDir.mkdirs();
-            this.oldSettingsFile = new File(combatTagDir, "settings.prop");
-        }
+    public CombatTag() {
+        File combatTagDir = new File(getDataFolder().getParent(), "CombatTag");
+        combatTagDir.mkdirs();
+        this.oldSettingsFile = new File(combatTagDir, "settings.prop");
+    }
         
 	private MainConfig settings;
     private MessageConfig messages;
@@ -137,6 +138,8 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
 
     private static final int projectId = 86389;
 
+
+    private ForceFieldListener forceFieldListener;
     public void tryUpdatePlugin() {
         if (getSettings().isUpdateEnabled()) {
 			// Updater updater = new Updater(this, CombatTag.projectId, this.getFile(), UpdateType.DEFAULT, true); -- Updating is broken
@@ -153,5 +156,11 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
     	manager.registerEvents(new CompatibilityListener(), this);
     	manager.registerEvents(new PlayerListener(), this);
     	manager.registerEvents(new SettingListener(), this);
+        if (PluginCompatibility.hasWorldGuard()) {
+            this.forceFieldListener = new ForceFieldListener(this);
+            Utils.info("Getting all worldguard regions");
+            forceFieldListener.cacheAll();
+            manager.registerEvents(forceFieldListener, this);
+        }
     }
 }
