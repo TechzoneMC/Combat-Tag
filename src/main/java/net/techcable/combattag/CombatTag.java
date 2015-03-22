@@ -73,6 +73,7 @@ public class CombatTag extends TechPlugin<CombatPlayer> {
             setEnabled(false);
             return;
         }
+        getCommand("ct").setExecutor(new CombatTagExecutor(this));
 		initMetrics();
 		tryUpdatePlugin();
 		registerListeners();

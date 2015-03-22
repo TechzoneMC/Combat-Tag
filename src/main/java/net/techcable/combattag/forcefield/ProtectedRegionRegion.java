@@ -3,12 +3,13 @@ package net.techcable.combattag.forcefield;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.sk89q.worldedit.BlockVector;
+import net.techcable.combattag.concurrent.BlockPos;
 import org.bukkit.World;
 
 import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
-import net.techcable.combattag.forcefield.BorderFinder.BorderPoint;
 import net.techcable.combattag.forcefield.BorderFinder.Region;
 
 import lombok.*;
@@ -20,7 +21,7 @@ public class ProtectedRegionRegion implements BorderFinder.Region {
     private final ProtectedRegion region;
     
     @Override
-    public boolean contains(BorderPoint point) {
+    public boolean contains(BlockPos point) {
         return contains(point.getX(), point.getY(), point.getZ());
     }
 
@@ -30,14 +31,26 @@ public class ProtectedRegionRegion implements BorderFinder.Region {
     }
     
     @Override
-    public Collection<BorderPoint> getPoints() {
-        HashSet<BorderPoint> result = new HashSet<>();
+    public Collection<BlockPos> getPoints() {
+        HashSet<BlockPos> result = new HashSet<>();
         for (BlockVector2D blockVector : region.getPoints()) {
-            result.add(new BorderFinder.BorderPoint(blockVector.getBlockX(), region.getMinimumPoint().getBlockY(), blockVector.getBlockZ(), getWorld()));
+            result.add(new BlockPos(blockVector.getBlockX(), region.getMinimumPoint().getBlockY(), blockVector.getBlockZ(), getWorld()));
         }
         return result;
     }
-    
+
+    @Override
+    public BlockPos getMin() {
+        BlockVector min = getRegion().getMinimumPoint();
+        return new BlockPos(min.getBlockX(), min.getBlockY(), min.getBlockZ(), getWorld());
+    }
+
+    @Override
+    public BlockPos getMax() {
+        BlockVector max = getRegion().getMaximumPoint();
+        return new BlockPos(max.getBlockX(), max.getBlockY(), max.getBlockZ(), getWorld());
+    }
+
     @Override
     public boolean equals(Object otherObj) {
         if (otherObj == this) return true;

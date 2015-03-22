@@ -104,6 +104,10 @@ public class MessageConfig extends Config {
         return MessageFormat.format(color(commandMessageTagged), remainingTime);
     }
 
+    public String getCommandMessageNotTagged() {
+        return color(commandMessageNotTagged);
+    }
+
     private static String color(String msg) {
         return ChatColor.translateAlternateColorCodes('&', msg);
     }

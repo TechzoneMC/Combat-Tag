@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 
+import net.techcable.combattag.forcefield.ForceFieldListener;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -27,8 +28,8 @@ public class CombatPlayer extends TechPlayer {
 		super(player, plugin);
 	}
 
-	public ForceField getForceField() {
-		if (forceField != null) forceField = new ForceField(getEntity(), getPlugin());
+	public ForceField getForceField(ForceFieldListener listener) {
+		if (forceField == null) forceField = new ForceField(getEntity(), listener);
 		return forceField;
 	}
 
@@ -45,9 +46,13 @@ public class CombatPlayer extends TechPlayer {
 	}
 	
 	public void tag() {
-		this.tagTime = System.currentTimeMillis() + (getPlugin().getSettings().getTagDuration() * 1000);
+		tag(getPlugin().getSettings().getTagDuration() * 1000);
 	}
-	
+
+    public void tag(long millis) {
+        this.tagTime = System.currentTimeMillis() + millis;
+    }
+
 	public long getRemainingTagTime() {
 		if (!isTagged()) return -1;
 		return tagTime - System.currentTimeMillis();

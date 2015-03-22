@@ -1,12 +1,12 @@
 package net.techcable.combattag.forcefield;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.Bukkit;
+import com.google.common.collect.*;
+import net.techcable.combattag.concurrent.BlockInfo;
+import net.techcable.combattag.concurrent.BlockPos;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,74 +14,58 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-
-import net.techcable.combattag.forcefield.BorderFinder.BorderPoint;
 import net.techcable.combattag.forcefield.BorderFinder.Region;
 
 import lombok.*;
 
 @Getter
 public class ForceField extends BukkitRunnable {
-    
-    public ForceField(Player player, Plugin plugin) {
+
+    public static final int DEFAULT_RADIUS = 20;
+    private final ForceFieldListener listener;
+
+    public ForceField(Player player, ForceFieldListener listener) {
         this.player = player;
-        this.plugin = plugin;
-        this.runTaskTimerAsynchronously(plugin, 1, 1);
+        this.plugin = listener.getPlugin();
+        this.listener = listener;
+        runTaskTimerAsynchronously(plugin, 0, 3); //Every 3 ticks
     }
     
     private final Player player;
     private final Plugin plugin;
-    private final Queue<BlockInfo> toSend = new ConcurrentLinkedQueue<>();
-    private final Queue<BlockInfo> toReset = new ConcurrentLinkedQueue<>();
-    
-    private Set<BlockInfo> previouslyUpdated;
-    
+    private volatile BlockPos lastKnownLocation;
+
+    private final Multimap<Region, BlockPos> toUpdate = Multimaps.synchronizedSetMultimap(MultimapBuilder.SetMultimapBuilder.hashKeys().hashSetValues().<Region, BlockPos>build());
+
+    private volatile Multimap<Region, BlockPos> previouslyUpdated;
     /**
      * Create a forcefield around the border of a region
      * 
      * <b>Very Important for Regions to implement the Equals and hashCode Methods</b>
      * 
      * Only show within the specified radius of the player
-     * 
-     * @param radius to show border in
+     *
      * @param regions regions that the border should show along the border of
-     * @param material the material that will show
-     * @param data the data of the material that will show
      */
-    public void updateForceField(int radius, Collection<? extends BorderFinder.Region> regions, Material material, byte data) {
-        Set<BlockInfo> toUpdate = new HashSet<>();
-        
+    public void updateForceField(Collection<? extends BorderFinder.Region> regions) {
+        lastKnownLocation = BlockPos.fromLocation(player.getLocation());
         for (Region region : regions) {
-            for (BorderPoint point : getBorderPoints(region)) {
-                if (inRadius(radius, point)) {
-                    toUpdate.add(new BlockInfo(material, data, point));
-                }
+            for (BlockPos point : getBorderPoints(region)) {
+                this.toUpdate.put(region, point);
             }
         }
-        
-        toSend.addAll(toUpdate);
-        if (previouslyUpdated != null) {
-            for (BlockInfo info : previouslyUpdated) {
-                Block block = info.getLocation().asLocation().getBlock();
-                toReset.add(new BlockInfo(block.getType(), block.getData(), info.getLocation())); //Reset to real info
-            }
-        }
-        previouslyUpdated = toUpdate;
     }
     
-    private static final Multimap<BorderFinder.Region, BorderFinder.BorderPoint> borderCache = HashMultimap.create();
-    public static Collection<BorderPoint> getBorderPoints(BorderFinder.Region region) {
+    private static final Multimap<BorderFinder.Region, BlockPos> borderCache = HashMultimap.create();
+    public static Collection<BlockPos> getBorderPoints(BorderFinder.Region region) {
         if (!borderCache.containsKey(region)) {
-            Collection<BorderFinder.BorderPoint> borderPoints = BorderFinder.getBorderPoints(region);
-            borderCache.putAll(region, borderPoints);
+            Collection<BlockPos> BlockPoss = BorderFinder.getBorderPoints(region);
+            borderCache.putAll(region, BlockPoss);
         }
         return borderCache.get(region);
     }
     
-    public boolean inRadius(int radius, BorderPoint l) { //Based on worldguard code
+    public boolean inRadius(int radius, BlockPos l) { //Based on worldguard code
         Location corner1 = getPlayer().getLocation().add(radius, 0, radius);
         Location corner2 = getPlayer().getLocation().subtract(radius, 0, radius);
         int x = l.getX();
@@ -91,25 +75,35 @@ public class ForceField extends BukkitRunnable {
                 && y >= corner1.getBlockY() && y < corner2.getBlockY()+1
                 && z >= corner1.getBlockZ() && z < corner2.getBlockZ()+1;
     }
-    
+
     @Override
     public void run() {
-        while (!toReset.isEmpty()) {
-            BlockInfo info = toReset.poll();
-            getPlayer().sendBlockChange(info.getLocation().asLocation(), info.getMaterial(), info.getData());
+        if (previouslyUpdated != null) {
+            for (Region region : previouslyUpdated.keySet()) {
+                for (BlockPos borderPoint : previouslyUpdated.get(region)) {
+                    for (int y = 0; y < region.getWorld().getMaxHeight(); y++) { //getMaxHeight is thread safe
+                        BlockPos position = borderPoint.withY(y);
+                        BlockInfo info = listener.getInfoAt(position);
+                        player.sendBlockChange(position.asLocation(), info.getMaterial(), info.getData());
+                    }
+                }
+            }
         }
-        while (!toSend.isEmpty()) {
-            BlockInfo info = toSend.poll();
-            getPlayer().sendBlockChange(info.getLocation().asLocation(), info.getMaterial(), info.getData());
+
+        ImmutableMultimap<Region, BlockPos> toUpdate = ImmutableMultimap.copyOf(this.toUpdate);
+        BlockPos lastKnownLocation = this.lastKnownLocation;
+        for (Region region : toUpdate.keySet()) {
+            for (BlockPos borderPoint : toUpdate.get(region)) {
+                for (int y = region.getMin().getY(); y <= region.getMax().getY(); y++) {
+                    BlockPos position = borderPoint.withY(y);
+                    BlockInfo realData = listener.getInfoAt(position);
+                    if (!realData.getMaterial().isSolid() && inRadius(DEFAULT_RADIUS, lastKnownLocation)) {
+                        player.sendBlockChange(position.asLocation(), Material.STAINED_GLASS_PANE, (byte) 14);
+                    }
+                }
+            }
         }
-    }
-    
-    @RequiredArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    private static class BlockInfo {
-        private final Material material;
-        private final byte data;
-        private BorderFinder.BorderPoint location;
+
+        this.previouslyUpdated = toUpdate;
     }
 }
